@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<link href="https://fonts.googleapis.com/css?family=Do+Hyeon|Quantico|Righteous" rel="stylesheet">
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				background-color: black;
+				color: white;
+			}
+			
+			#clock {
+				height: 90vh;
+				font-size: 50vh;
+				font-family: 'Quantico';
+				text-align: center;
+			}
+			
+			.button-row {
+				position: absolute;
+				width: 100vw;
+				height: 8vh;
+				display: flex;
+				justify-content: center;
+			}
+
+			.button-row > div {
+				cursor: pointer;
+				border: solid thin white;
+				padding: 15px 30px 25px 30px;
+				background-color: #111;
+				font-size: 3vh;
+				margin-left: 10px;
+			}
+
+			.button-row > div:first-child {
+				margin-left: 0px;
+			}
+
+			.button-row > div:hover {
+				background-color: #333;
+			}
+		</style>
+		<script>
+		
+			var time, last, play, start;
+			start = 10 * 60 * 1000;
+			
+			var toggle = function () {
+				play = !play;
+				last = play ? new Date() : null;
+			}
+			
+			var reset = function () {
+				play = false;
+				last = null;
+				time = start; // 10 min x 60 seconds x 1000 milliseconds
+			}
+			
+			var displayTime = function () {
+				window.requestAnimationFrame(displayTime);
+				
+				if (play) {
+					var now = new Date();
+					var difference = now.getTime() - last.getTime();
+					last = now;
+					time -= difference;
+					
+					if (time <= 0) {
+						time = 0;
+						//document.getElementById('buzzer-sound').play();
+						play = false;
+					}
+				}
+				
+				document.getElementById('playpause').innerHTML = play ? '&#9612; &#9612;' : '&#9654;';
+					
+				var min = Math.floor(time/60000);
+				var sec = Math.floor((time % 60000)/1000);
+				var tenths = Math.floor((time % 1000) / 100);
+				
+				var display = '';
+				if (time == 0) {
+					display = '0:00';
+				} else if (min == 0) {
+					display = sec.toString() + '.' + tenths;
+				} else {
+					var zero = sec < 10 ? '0' : '';
+					display = min.toString() + ':' + zero + sec;
+				}
+				document.getElementById('clock').innerHTML = display;
+			};
+			
+			var setTime = function () {
+				play = false;
+				var value = window.prompt('enter time [mm:ss.xxx]');
+				var timesplit = value.split(':');
+				if (timesplit.length == 2) {
+					var min = parseInt(timesplit[0]);
+					var sec = parseFloat(timesplit[1]);
+					start = Math.round((min * 60 + sec) * 1000);
+				}
+				time = start;
+			};
+			
+			var add1 = function () {
+				play = false;
+				time += 1000;
+			}
+			
+			window.setTimeout(() => {			
+				reset();
+				displayTime();
+			}, 100);
+		
+		</script>
+	</head>
+	<body>
+		<div id="clock"></div>
+		<div class="button-row">
+			<div id="playpause" onclick="toggle()"></div>
+			<div id="playpause" onclick="setTime()">set</div>
+			<div id="playpause" onclick="reset()">reset</div>
+			<div id="playpause" onclick="add1()">+0:01</div>
+		</div>
+	</body>
+</html>

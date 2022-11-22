@@ -1,0 +1,150 @@
+<html>
+
+<head>
+  <title>Past Attendees</title>
+  <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1" />
+  <link href="https://fonts.googleapis.com/css?family=Exo|Russo+One" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script>
+    var eventsUrl = 'https://api.meetup.com/Columbus-Sports-and-Social/events?desc=true&photo-host=public&sig_id=92748082&status=past&only=id%2Cname%2Ctime';
+    var rsvpsPre = 'https://api.meetup.com/Columbus-Sports-and-Social/events/';
+    var rspvsPost = '/rsvps?&sign=true&photo-host=public&sig_id=92748082';
+    var events = new Array();
+    var totalCount = 0;
+
+    $(document).ready(function() {
+
+      var peopleVue = new Vue({
+        el: '#events',
+        data: {
+          people: new Array()
+        },
+        filters: {
+          formatDateTime: function(value) {
+            if (!value) return '';
+            var d = new Date(value);
+            var day = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][d.getDay()];
+            return day + ' ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+          }
+        }
+      });
+
+      var findPerson = function(person) {
+        var index = -1;
+        $.each(peopleVue.people, (i, p) => {
+          if (p.id == person.id) {
+            index = i;
+          }
+        });
+        return index > -1 ? peopleVue.people[index] : null;
+      }
+
+      var addOrIncrement = function(member, event) {
+        var person = findPerson(member);
+        if (person) {
+          person.attendance++;
+        } else {
+          person = {
+            id: member.id,
+            name: member.name,
+            attendance: 1,
+            picture: member.photo.thumb_link,
+            recent: event.time
+          };
+          peopleVue.people.push(person);
+        }
+      };
+
+      var get = function(url, callback) {
+        $.ajax({
+          dataType: 'jsonp',
+          method: 'get',
+          url: url,
+          success: callback
+        });
+      };
+
+      var handleEvents = function(result) {
+        console.log('back with ' + result.data.length + ' results');
+        console.dir(result);
+        totalCount += result.data.length;
+        $.each(result.data, function(index, value) {
+          if (value.name.toLowerCase().includes('chadminton')) {
+            events.push(value);
+          }
+        });
+        if (totalCount >= result.meta.total_count) {
+          $.each(events, (index, event) => {
+            getPeople(event);
+          });
+        } else if (result.meta.next_link) {
+          get(result.meta.next_link, handleEvents);
+        }
+      };
+
+      var getPeople = function(event) {
+        var rsvpsUrl = rsvpsPre + event.id + rspvsPost;
+        $.ajax({
+          dataType: 'jsonp',
+          method: 'get',
+          url: rsvpsUrl,
+          success: function(result2) {
+            $.each(result2.data, (index, person) => {
+              if (person.response == 'yes') {
+                addOrIncrement(person.member, person.event);
+              }
+            });
+          }
+        });
+      };
+
+      get(eventsUrl, handleEvents);
+    });
+  </script>
+  <style>
+    .chad-event {
+      margin-top: 15px;
+    }
+    
+    .chad-event>.title {
+      font-size: 20pt;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <a class="title" href="index.html">
+      <img src="img/chad-logo-square-2.png" /> CHADMINTON
+    </a>
+    <div class="menu">
+      <a href="events.html">events</a>
+      <!-- <a href="people.html">people</a> -->
+      <!-- <a href="teams.html">teams</a> -->
+      <a href="rules.html">rules</a>
+      <a href="pictures.html">pictures</a>
+      <a href="about.html">about</a>
+    </div>
+    <div class="links">
+      <a href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')"><img src="img/facebook.png" /></a>
+      <a href="javascript:window.open('https://twitter.com/chadm1nton')"><img src="img/twitter.png" /></a>
+    </div>
+  </div>
+  <div class="paralax" style="background-image:url('img/photos/2017/IMG_6030.jpg'); background-position-y: -150px;"></div>
+  <div class="section">
+    <div class="title">
+      <span class="red-text">PAST ATTENDEES</span>
+    </div>
+    <div class="content" id="events">
+      <div v-for="p in people" class="chad-event">
+        <a v-bind:href="'https://www.meetup.com/Columbus-Sports-and-Social/members/' + p.id" target="_blank">
+          <img v-bind:src="p.picture" />{{ p.name + ' - ' + p.attendance + ' events' }}
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

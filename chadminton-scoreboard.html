@@ -1,0 +1,1363 @@
+<html>
+	<head>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1" />
+		<title>Chadminton Scoreboard</title>
+		<style>
+			html, body {
+				margin: 0px;
+				background: black;
+				color: white;
+				font-family: Segoe UI;
+				font-weight: bold;
+				font-style: italic;
+			}
+			
+			div {
+				user-select: none;
+			}
+			
+			.top {
+				width: 100%;
+				height: 15vh;
+			}
+			
+			.top > div {
+				display: inline-block;
+			}
+			
+			.button {
+				text-transform: uppercase;
+				background-color: black;
+				color: #fff;
+				display: inline-block !important;
+				text-align: center;
+				font-size: 12pt;
+				border: solid #fff 1px;
+				padding: 5px 20px;
+				margin: 5px;
+				cursor: pointer;
+				width: auto;
+				-webkit-user-select: none;
+			}
+			
+			.button:hover {
+				background-color: #888888;
+			}
+			
+			#period {
+				font-size: 36pt;
+				margin-left: 38vw;
+				cursor: pointer;
+			}
+			
+			#clock {
+				font-size: 60pt;
+				margin-left: 20px;
+				width: 220px;
+				text-align: right;
+				cursor: pointer;
+				padding: 5px;
+			}
+			
+			#clock.stopped {
+				box-shadow: 0px 0px 0px 3px #f00;
+			}
+			
+			#ad {
+				position: absolute;
+				top: 0.5vh;
+				left: 0.5vh;
+				height: 14vh;
+				width: 25vw;
+				cursor: pointer;
+				background-color: #000;
+				color: #fff;
+				font-style: normal;
+				font-size: 18pt;
+				background-position: top left;
+				background-repeat: no-repeat;
+				background-size: auto 14vh;
+				text-align: right;
+			}
+			
+			.pad::before {
+				display: block;
+				font-size: 8pt;
+				content: 'advertisement';
+			}
+			
+			.pad {
+				padding: 3px;
+				width: 50%;
+				float: right;
+				height: 100%;
+			}
+			
+			.bottom {
+				position: relative;
+				width: 100%;
+				height: 85vh;
+			}
+			
+			.bottom > div {
+				display: inline-block;
+			}
+			
+			.team {
+				position: absolute;
+				top: 0px;
+				bottom: 0px;
+				width: 50%;
+			}
+			
+			#away.team {
+				left: 0px;
+			}
+			
+			#home.team {
+				right: 0px;
+			}
+			
+			.goals {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				font-size: 360pt;
+				cursor: pointer;
+				width: 100%;
+				text-align: center;
+			}
+			
+			#versus {
+				width: 50px;
+				height: 50px;
+				border-radius: 25px;
+				background-color: black;
+				color: white;
+				cursor: pointer;
+				text-align: center;
+				font-size: 26pt;
+				padding: 0px;
+				margin: 0px;
+				box-shadow: 0px 0px 0px 1px #fff;
+				font-style: normal;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				-webkit-transform: translate(-50%, -50%); /* translate by 50% of the element's height/width */
+				z-index: 7;
+			}
+			
+			#versus:hover {
+				background-color: #fff;
+				color: #000;
+			}
+			
+			#matchup-card {
+				display: none;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				height: 80vh;
+				width: 80vw;
+				box-shadow: 0px 0px 0px 300px #000;
+				-webkit-transform: translate(-50%, -50%); /* translate by 50% of the element's height/width */
+				z-index: 1000;
+				background-color: #000;
+			}
+			
+			#matchup-card > div {
+				position: relative;
+				height: 80vh;
+				width: 40vw;
+				background-position: bottom center;
+				background-size: auto 60%;
+				background-repeat: no-repeat;
+				text-align: center;
+			}
+			
+			#matchup-card > div > .matchup-city {
+				font-size: 2vmax;
+			}
+			
+			#matchup-card > div > .matchup-name {
+				font-size: 5vmax;
+			}
+			
+			#matchup-card > div:first-child {
+				float: left;
+			}
+			
+			#matchup-card > div:last-child {
+				float: right;
+			}
+
+			.menu {
+				opacity: 0.1;
+				position: absolute;
+				bottom: 0px;
+			}
+
+			.menu:hover {
+				opacity: 0.7;
+			}
+
+			.menu > .button {
+				width: 50px;
+				height: 50px;
+				border-radius: 25px;
+				background-color: black;
+				color: white;
+				cursor: pointer;
+				text-align: center;
+				font-size: 24pt;
+				display: inline-block;
+				padding: 0px;
+				margin: 0px;
+				border: none;
+				font-style: normal;
+			}
+
+			.menu > .button.small {
+				width: 30px;
+				height: 30px;
+				border-radius: 15px;
+				font-size: 16pt;
+			}
+			
+			.menu > .button:hover {
+				background-color: #444444;
+			}
+
+			.top .menu {
+				top: 5px;
+				right: 5px;
+				opacity: 0.3;
+			}
+
+			.top .menu:hover {
+				opacity: 0.9;
+			}
+
+			.top .menu > .button {
+				background-color: #444444;
+			}
+			
+			.top .menu > .button:hover {
+				background-color: #888888;
+			}
+			
+			#away .menu{
+				right: 5px;
+			}
+
+			#home .menu {
+				left: 5px;
+			}
+			
+			.name {
+				padding: 3px;
+				font-size: 48pt;
+				position: absolute;
+				top: 0px;
+				text-transform: uppercase;
+			}
+			
+			#away .name {
+				text-align: right;
+				right: 25px;
+			}
+			
+			#home .name {
+				left: 25px;
+			}
+
+			.swatch {
+				display: inline-block;
+				border: 1px solid white;
+				height: 25px;
+				width: 25px;
+				border-radius: 13px;
+				margin-right: 2px;
+				margin-bottom: 2px;
+			}
+
+			.team-select {
+				display: inline-block;
+				border: 1px solid white;
+				height: 120px;
+				width: 120px;
+				border-radius: 60px;
+				margin-right: 2px;
+				margin-bottom: 2px;
+                background-color: white;
+			}
+            
+            .team-select > img {
+                width: 120px;
+                height: 120px;
+            }
+			
+			.team-select.big {
+				height: 200px;
+				width: 200px;
+				border-radius: 100px;
+			}
+			
+			.team-select.big > img {
+				height: 200px;
+				width: 200px;
+			}
+			
+			.picker {
+				position: absolute;
+				width: 30%;
+				height: 30%;
+				background-color: black;
+				padding: 15px;
+				top: 50%;
+				left: 50%;
+				-webkit-transform: translate(-50%, -50%); /* translate by 50% of the element's height/width */
+				z-index: 10;
+			}
+			
+			#team-picker {
+				height: 40%;
+				width: 80%;
+			}
+
+			#commercial {
+				position: absolute;
+				width: 640px;
+				height: 390px;
+				background-color: black;
+				top: 50%;
+				left: 50%;
+				-webkit-transform: translate(-50%, -50%); /* translate by 50% of the element's height/width */
+				z-index: 20;
+				display: none;
+			}
+			
+			.info-popup {
+				position: absolute;
+				height: 50vh;
+				padding: 15px;
+				top: 25%;
+				left: 0px;
+				right: 0px;
+				text-align: center;
+				box-shadow: 0px 0px 0px 3px #fff;
+				overflow: hidden;
+				z-index: 10;
+				background-position: center center;
+				background-size: auto 150%;
+				background-repeat: no-repeat;
+			}
+			
+			.info-popup > div.shine {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				width: 100px;
+				height: 100%;
+				z-index: 50;
+				opacity: 0.3;
+				background-color: #ffffff;
+				-webkit-transform: skewX(150deg);
+				animation-name: shine;
+				animation-duration: 2s;
+				animation-iteration-count: infinite;
+			}
+			
+			@-webkit-keyframes shine {
+				0% {
+					left: -100px;
+				}
+				100% {
+					left: calc(100% + 100px);
+				}
+			}
+			
+			.info-popup> div:first-child {
+				font-size: 200pt;
+			}
+			
+			.scores {
+				position: absolute;
+				bottom: 2px;
+				width: 40%;
+			}
+			
+			#away .scores {
+				left: 2px;
+			}
+			
+			#home .scores {
+				text-align: right;
+				right: 2px;
+			}
+			
+			.transparent-background {
+				position: absolute;
+				top: 0px;
+				width: 30%;
+				height: auto;
+				opacity: 0.18;
+			}
+			
+			#away .transparent-background {
+				left: 0px;
+			}
+			
+			#home .transparent-background {
+				right: 0px;
+			}
+			
+			#shroud {
+				position: absolute;
+				left: 0px;
+				right: 0px;
+				top: 0px;
+				bottom: 0px;
+				background-color: #000000;
+				opacity: 0.3;
+				z-index: 7;
+				display: none;
+			}
+
+			.scroller {
+				width: 9%;
+				cursor: pointer;
+				position: absolute;
+				top: 10px;
+				font-style: normal;
+				font-size: 32pt;
+			}
+
+			.scroller:hover {
+				color: #00ff44;
+			}
+
+			.scroll-div {
+				position: absolute;
+				width: 80%;
+				top: 0px;
+				left: 10%;
+				height: 140px;
+				overflow-x: hidden;
+				overflow-y: hidden;
+				white-space: nowrap;
+			}
+
+			.left {
+				left: 0px;
+			}
+
+			.right {
+				right: 0px;
+			}
+			
+			#tool-tip {
+				display: none;
+				position: fixed;
+				left: 0px;
+				top: 0px;
+				z-index: 1000;
+				background-color: #000;
+				padding: 2px;
+			}
+			
+			@media only screen and (orientation: portrait) {				
+			
+				.team {
+					left: 0px;
+					right: 0px;
+					height: 50%;
+					width: auto;
+				}
+				
+				#away.team {
+					top: 0px;
+					bottom: 50%;
+				}
+				
+				#home.team {
+					top: 50%;
+					bottom: 0px;
+				}
+			
+				.goals {
+					position: absolute;
+					left: 15px;
+					top: -20px;
+					font-size: 140pt;
+					cursor: pointer;
+				}
+				
+				.behinds {
+					position: absolute;
+					left: 30px;
+					top: 200px;
+					font-size: 100pt;
+					cursor: pointer;
+				}
+				
+				.score {
+					position: absolute;
+					left: 200px;
+					top: 100px;
+					font-size: 100pt;
+				}
+			}
+
+		</style>
+		<script src="https://www.youtube.com/player_api"></script>
+		<script type="text/javascript">
+		
+		Array.prototype.shuffle = function() {
+			var i = this.length, j, temp;
+			if ( i == 0 ) return this;
+			while ( --i ) {
+				j = Math.floor( Math.random() * ( i + 1 ) );
+				temp = this[i];
+				this[i] = this[j];
+				this[j] = temp;
+			}
+			return this;
+		}
+
+			var ytReady = false;
+			var commercials = [
+				'B4PNk7Y4XSE', // sonic
+				'E03D1PS3ypk', // pacific life
+				'aZo4yKpROL0', // kfc
+				'F1WOtKbIPJA', // arby's
+				'6FcFUINjjAk', // oreo
+				'VNw8SJ1nIHc', // skyline
+				'ZUDkrkykvZs', // nintendo switch
+				'D692JJPPUe4', // VW mr. roboto
+				'3tSiE6bTnxE', // captain morgan
+				'QkMUZ1U1Ye8', // huntington
+				'7LQpRQh2KSQ'  // quiznos
+			];
+			
+			commercials.shuffle();
+
+			function onYouTubePlayerAPIReady() {
+				ytReady = true;
+			}
+			
+			var adWait = false;
+			var nextCommercial = 0;
+			var playNextCommercial = function (callback) {
+				adWait = true;
+				
+				var c = document.getElementById('commercial');
+				c.innerHTML = '<div id="commercial-inner">LOADING ADVERTISEMENT</div>';
+				c.style.display = 'block';
+				var video = commercials[nextCommercial];
+				
+				var player = new YT.Player('commercial-inner', {
+				  height: '390',
+				  width: '640',
+				  videoId: video,
+				  events: {
+					onReady: function (event) {
+						event.target.playVideo();
+					},
+					onStateChange: function (event) {        
+						if(event.data === 0) {
+							var c = document.getElementById('commercial');
+							c.innerHTML = '';
+							c.style.display = 'none';
+							adWait = false;
+							if(callback) callback();
+							nextCommercial = (nextCommercial + 1) % commercials.length;
+						}
+					}
+				  }
+				});
+			}
+
+			// --------------------------------------------------------------------------------------------------------------------------------- end of youtube stuff
+		
+			var getJSONfile = function (filename, callback) {
+				var xmlhttp;
+				if (window.XMLHttpRequest) {
+					xmlhttp = new XMLHttpRequest();
+				} else {
+				// code for older browsers
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						try {
+							callback(JSON.parse(this.responseText));
+						} catch (ex) {
+							callback(ex);
+						}
+					}
+				};
+
+				if (window.location.protocol == 'file:') {
+					switch(filename) {
+						case 'teams.json':
+							callback([
+								{ id: 1, city: 'Minneapolis', name: 'Squirrels', abbr: 'MIN', color1: 'gray', color2: 'navy' },
+								{ id: 2, city: 'New York', name: 'Metts', abbr: 'NY', color1: 'orange', color2: 'blue' },
+								{ id: 3, city: 'Brooklyn', name: 'Scoops', abbr: 'BRK', color1: 'purple', color2: 'green' },
+								{ id: 4, city: 'Philadelphia', name: 'Cheesesteaks', abbr: 'PHI', color1: 'blue', color2: 'gold' },
+								{ id: 5, city: 'New England', name: 'Lobsters', abbr: 'NE', color1: 'maroon', color2: 'navy' },
+								{ id: 6, city: 'Louisville', name: 'Sluggers', abbr: 'LOU', color1: 'lime', color2: 'green' },
+								{ id: 7, city: 'Atlanta', name: 'Peaches', abbr: 'ATL', color1: 'orange', color2: 'green' },
+								{ id: 8, city: 'Orlando', name: 'Ocelots', abbr: 'ORL', color1: 'gray', color2: 'orange' },
+								{ id: 9, city: 'San Diego', name: 'Whalers', abbr: 'SD', color1: 'navy', color2: 'white' },
+								{ id: 10, city: 'Columbus', name: 'Griffins', abbr: 'CMB', color1: 'maroon', color2: 'gold' }
+							]);
+							break;
+						case 'advertisements.json':
+							callback([
+								{
+									"id": 1,
+									"name": "Hot Chicken Takeover",
+									"font": "Arial",
+									"href": "http://hotchickentakeover.com/",
+									"images": [
+										"img/ads/hct-meal.png",
+										"img/ads/hct-logo.png"
+									]
+								}
+							]);
+							break;
+					}
+				} else {
+					xmlhttp.open("GET", filename, true);
+					xmlhttp.send();
+				}
+			};
+            
+            Array.prototype.getElementById = function (id) {
+                var value = null;
+                for (var i in this) {
+                    if (this[i].id == id) {
+                        value = this[i];
+                        break;
+                    }
+                }
+                return value;
+            }
+
+			var getLocalValue = function (key) {
+				var value = window.localStorage.getItem(key);
+				if (typeof value == 'undefined' || value == 'undefined') {
+					window.localStorage.removeItem(key);
+					value = null;
+				}
+				try {
+					if (value) {
+						value = JSON.parse(value);
+					}
+				} catch (e) { }
+
+				return value;
+			};
+
+			var setLocalValue = function (key, value) {
+				try {
+					if (typeof value == 'undefined' || value == 'undefined') {
+						return;
+					}
+					value = JSON.stringify(value);
+				} catch (e) { }
+
+				window.localStorage.setItem(key, value);
+				};
+
+			var clearLocalValue = function (key) {
+				window.localStorage.removeItem(key);
+			};
+			
+			var cache, play, periodLength, period, time, last, teams;
+			
+			var setup = function () {
+				play = false;
+				cache = getLocalValue('cache') || {};
+				periodLength = cache.periodLength || 20 * 60 * 1000; // X minutes * 60 seconds * 1000 thousandths
+				period = cache.period || 1;
+				time = cache.time != null ? cache.time : periodLength;
+				teams = cache.teams || [
+					{ g: 0, b: 0, n: 'select away team', to: 2, goals: [], img: '', colors: { f: 'white', b: 'red' } },
+					{ g: 0, b: 0, n: 'select home team', to: 2, goals: [], img: '', colors: { f: 'white', b: 'blue' } }
+				];
+				if (time == 0) {
+					if (period != 1 && teams[0].g != teams[1].g) {
+						teams[0].g = 0;
+						teams[0].goals = [];
+						teams[0].to = 2;
+						teams[1].g = 0;
+						teams[1].goals = [];
+						teams[1].to = 2;
+						
+						if (period == 2) {
+							toggglePeriod();
+						}
+					}
+					togglePeriod();
+				}
+			};
+		
+			var getHex = function (value, mult) {
+				mult = mult || 1;
+				var x = value * mult;
+				var hex = x.toString(16);
+				while (hex.length < 2) {
+					hex = '0' + hex;
+				}
+				return hex;
+			};
+			
+			var loadAds = function () {
+				getJSONfile('advertisements.json', function (ads) {
+                    var advertisements = ads;
+					var currentAd = 0;
+					var changeAd = function () {
+						var ad = advertisements[currentAd];
+						var adBox = document.getElementById('ad');
+						adBox.onclick = function () {
+							window.open(ad.href);
+						};
+						var image = ad.images[Math.floor(Math.random()*ad.images.length)];
+						adBox.style.backgroundImage = 'url(\'' + image + '\')';
+						adBox.innerHTML = '<div class="pad" style="font-family: ' + ad.font + ';">' +
+										  ad.name +
+										  '</div>';
+						currentAd = (currentAd + 1) % advertisements.length;
+					};
+					window.setInterval(changeAd, (30000)); // change ad every 30 seconds
+					changeAd();
+				});
+			};
+
+			var fillColors = function fillColors () {
+				var html = '';
+				var steps = 3;
+				var x = Math.floor(255 / (steps - 1));
+				for (var g = 0; g < steps; g++) {
+					for (var r = 0; r < steps; r++) {
+						for (var b = 0; b < steps; b++) {
+							color = '#' + getHex(r, x) + getHex(g, x) + getHex(b, x);
+							html += '<div class="swatch" style="background-color: ' + color + ';" onclick="setColor(\'' + color + '\')"></div>';
+						}
+					}
+				}
+				document.getElementById('swatches').innerHTML = html;
+			};
+			
+            var allTeams;
+			var fillTeams = function () {
+				getJSONfile('teams.json', function (teams) {
+                    allTeams = teams;
+					var html = '';
+					for (var t = 0; t < teams.length; t++) {
+						var team = teams[t];
+						html += '<div onmousemove="setTeamTooltip(event, \'' + team.city + ' ' + team.name + '\')" onmouseleave="clearTeamTooltip()" onclick="setTeam(' + team.id + ')" class="team-select"><img src="img/teams/' + team.abbr + '.png" /></div>';
+					}
+					document.getElementById('teams').innerHTML = html;
+				});
+			};
+			
+			window.onbeforeunload = function () {
+				setLocalValue('cache', {
+					periodLength: periodLength,
+					period: period,
+					time: time,
+					teams: teams
+				});
+			};
+		
+			var toggleClock = function () {
+				play = !play;
+				last = play ? new Date() : null;				
+			};
+			
+			var playAnthem = function (anthem) {
+				modal(true);
+				var flag = document.createElement('div');
+				flag.id = 'anthem';
+				flag.style.position = 'absolute';
+				flag.style.top = '0px';
+				flag.style.left = '0px';
+				flag.style.bottom = '0px';
+				flag.style.right = '0px';
+				flag.style.zIndex = '1005';
+				document.body.appendChild(flag);
+				
+				var adWait = true;
+				var player = new YT.Player('anthem', {
+				  height: window.innerHeight,
+				  width: window.innerWidth,
+				  videoId: anthem,
+				  events: {
+					onReady: function (event) {
+						event.target.playVideo();
+					},
+					onStateChange: function (event) {        
+						if(event.data === 0) {
+							document.body.removeChild(document.getElementById('anthem'));
+							adWait = false;
+							modal(false);
+						}
+					}
+				  }
+				});
+			};
+			
+			var timeout = function (team) {
+				if (teams[team].to > 0) {	
+					teams[team].to--;			
+					if (play) toggleClock();
+					showInfo('TIMEOUT', { f: teams[team].colors.f, b: teams[team].colors.b, i: teams[team].img }, { resume: true });
+				}
+			};
+			
+			var displayTime = function () {
+				window.requestAnimationFrame(displayTime);
+				
+				var awayBlock = document.getElementById('away');
+				awayBlock.style.backgroundColor = teams[0].colors.b;
+				awayBlock.style.color = teams[0].colors.f;				
+				document.getElementById('away-goals').innerHTML = teams[0].g;
+				var awayname = teams[0].n;
+				for (var i = 0; i < teams[0].to; i++) {
+					awayname = '&bullet;' + awayname;
+				}
+				document.getElementById('away-name').innerHTML = awayname;
+				document.getElementById('away-scores').innerHTML = '';
+				for (var i = 0; i < teams[0].goals.length; i++) {
+					document.getElementById('away-scores').innerHTML += '<div>' + teams[0].goals[i].time + ' [' + teams[0].goals[i].scorer + ']</div>';
+				}
+				document.getElementById('away-logo').src = teams[0].img;
+				
+				var homeBlock = document.getElementById('home');
+				homeBlock.style.backgroundColor = teams[1].colors.b;
+				homeBlock.style.color = teams[1].colors.f;			
+				document.getElementById('home-goals').innerHTML = teams[1].g;
+				var homename = teams[1].n;
+				for (var i = 0; i < teams[1].to; i++) {
+					homename += '&bullet;';
+				}
+				document.getElementById('home-name').innerHTML = homename;	
+				document.getElementById('home-scores').innerHTML = '';
+				for (var i = 0; i < teams[1].goals.length; i++) {
+					document.getElementById('home-scores').innerHTML += '<div>' + teams[1].goals[i].time + ' [' + teams[1].goals[i].scorer + ']</div>';
+				}
+				document.getElementById('home-logo').src = teams[1].img;
+				
+				if (play) {
+					var now = new Date();
+					var difference = now.getTime() - last.getTime();
+					last = now;
+					time -= difference;
+					
+					if (time <= 0) {
+						time = 0;
+						document.getElementById('buzzer-sound').play();
+						play = false;
+						var message = '';
+						var style = { b: '#000', f: '#fff' };
+						var delayAd = false;
+						switch(period) {
+							case 1:
+								message = "HALFTIME";
+								togglePeriod();
+								break;
+							case 2:
+								if (teams[0].g > teams[1].g) {
+									style = teams[0].colors;
+									style.i = teams[0].img;
+									message = teams[0].n + ' WIN!';
+								} else if (teams[0].g < teams[1].g) {
+									style = teams[1].colors;
+									style.i = teams[1].img;
+									message = teams[1].n + ' WIN!';
+									delayAd = true;
+								} else {
+									message = "OVERTIME";
+									togglePeriod();
+								}
+								break;
+							case 'OT':
+								message = "OVERTIME";
+								break;
+						}
+						showInfo(message, style, { delayAd: delayAd });
+					} else if (time <= 60000 && lastScore != null) {
+						play = false;
+					}
+					document.getElementById('clock').classList.remove('stopped');
+				} else {
+					document.getElementById('clock').classList.add('stopped');
+				}
+					
+				var min = Math.floor(time/60000);
+				var sec = Math.floor((time % 60000)/1000);
+				var tenths = Math.floor((time % 1000) / 100);
+				
+				var display = '';
+				
+				if (min == 0) {
+					display = sec.toString() + '.' + tenths;
+					if (sec <= 33 && tenths == 0) {
+						window.setTimeout(function () {
+							document.getElementById('beep-sound').pause();
+							document.getElementById('beep-sound').load();
+						}, 100);
+						document.getElementById('beep-sound').play();
+					}
+				} else {
+					var zero = sec < 10 ? '0' : '';
+					display = min.toString() + ':' + zero + sec;
+				}
+				document.getElementById('period').innerHTML = period;
+				document.getElementById('clock').innerHTML = display;
+			};
+			
+			var isModal;
+			var modal = function (b) {
+				isModal = b;
+				if (b) {
+					document.getElementById('shroud').style.display = 'block';
+				} else {					
+					document.getElementById('shroud').style.display = 'none';
+				}
+			};
+			
+			var resumeOnInfoClose = null;
+			var showInfo = function (msg, style, options) {
+				options = options || {};
+				resumeOnInfoClose = options.resume;
+				style = style || { b: '#000', f: '#fff', i: '' };
+				modal(true);
+				var showMe = function () {
+					var go = document.getElementById('game-over');
+					go.style.display = 'block';
+					go.style.backgroundColor = style.b;
+					go.style.color = style.f;
+					go.style.backgroundImage = 'url(\'' + style.i + '\')';
+					var info = document.getElementById('info');
+					info.innerHTML = msg;
+					info.style.fontSize = (1200 / msg.length) + 'pt';
+				};
+				if (options.delayAd) {
+					adWait = true;
+					showMe();
+					window.setTimeout(playNextCommercial, 8000);
+				} else {
+					playNextCommercial(showMe);
+				}
+			};
+
+			var closeInfo = function () {
+				if (adWait) return;
+				
+				document.getElementById('game-over').style.display = 'none';
+				modal(false);
+				if (resumeOnInfoClose) {
+					resumeOnInfoClose = null;
+					toggleClock();
+				}
+			};
+			
+			var editGoal = function (team, index) {
+				teams[team].goals[teams[team].goals.length - 1].scorer = prompt('who scored this goal?');
+			}
+			
+			var lastScore = null;
+			var otWinner = false;
+			var addGoal = function (side) {
+				teams[side].g++;
+				
+				var timeCalc = periodLength - time;
+				if (period == 2) timeCalc += periodLength;
+				if (period == 'OT') timeCalc += periodLength * 2;
+				var min = Math.floor(timeCalc/60000);
+				var sec = Math.floor((timeCalc % 60000)/1000);
+				var tenths = Math.floor((timeCalc % 1000) / 100);
+				var zero = sec < 10 ? '0' : '';
+				var timeDisplay = min + ':' + zero + sec + '.' + tenths;				
+				
+				var display = '';
+				teams[side].goals.push({ time: timeDisplay, scorer: '' });
+				lastScore = side;
+				modal(true);
+				var gs = document.getElementById('goal-scored');
+				gs.style.display = 'block';
+				gs.style.backgroundColor = teams[side].colors.b;
+				gs.style.color = teams[side].colors.f;
+				document.getElementById('who-scored').focus();
+				if (period == 'OT') {
+					play = false;
+					otWinner = true;
+				} else if (Math.floor(time/60000) == 0) { // last minute of period
+					play = false;
+				}
+			};
+			
+			var submitGoalScorer = function () {
+				if (lastScore == null) return;
+				var who = document.getElementById('who-scored');
+				teams[lastScore].goals[teams[lastScore].goals.length - 1].scorer = who.value;
+				who.value = '';
+				modal(false);
+				var gs = document.getElementById('goal-scored');
+				gs.style.display = 'none';
+				if (otWinner) {
+					var style = teams[lastScore].colors;
+					style.i = teams[lastScore].img;
+					showInfo(teams[lastScore].n + ' WIN!', teams[lastScore].colors, { delayAd: true }); // pass true to save the ad until the end
+					otWinner = false;
+					time = 0;
+				}
+				lastScore = null;
+			};
+
+			var subtractGoal = function (side) {
+				if (teams[side].g > 0) {
+					teams[side].g--;
+					teams[side].goals.pop();
+				}
+				lastScore = null;
+				modal(false);
+				var gs = document.getElementById('goal-scored');
+				gs.style.display = 'none';
+			};
+			
+			var togglePeriod = function () {
+				if (period == 1) {
+					period = 2;
+				} else if (period == 2) {
+					period = 'OT';
+				} else {
+					period = 1;
+				}
+				time = periodLength;
+				document.getElementById('period').innerHTML = period;
+			};
+			
+			var ready = function ready () {
+				setup();
+				loadAds();
+				fillColors();
+                fillTeams();
+				displayTime();
+			};
+            
+            var selectedTeam = { side: null, team: null };
+			var openTeamDialog = function (side) {			
+				selectedTeam.side = side;
+				selectedTeam.team = null;
+				modal(true);
+				document.getElementById('team-picker').style.display = 'block';
+			};
+
+			var setTeam = function setColor (c) {
+                var team = allTeams.getElementById(c);
+                selectedTeam.team = team;
+				document.getElementById('selected-team').src = 'img/teams/' + team.abbr + '.png';
+				document.getElementById('selected-team-name').innerHTML = team.city + ' ' + team.name;
+			};
+			
+			var applyTeam = function () {
+				teams[selectedTeam.side].c = selectedTeam.team.city;
+				teams[selectedTeam.side].n = selectedTeam.team.name;
+				teams[selectedTeam.side].colors.b = selectedTeam.team.color1;
+				teams[selectedTeam.side].colors.f = selectedTeam.team.color2;
+				teams[selectedTeam.side].img = 'img/teams/' + selectedTeam.team.abbr + '.png';
+				cancelTeam();
+			};
+			
+			var cancelTeam = function () {
+				document.getElementById('selected-team-name').innerHTML = '';
+				document.getElementById('selected-team').src = '';
+				colorOption = { side: null, team: null };
+				modal(false);
+				document.getElementById('team-picker').style.display = 'none';
+			};
+			
+			var setTeamTooltip = function (event, teamname) {
+				var tip = document.getElementById('tool-tip');
+				tip.style.left = event.x - 20;
+				tip.style.top = event.y + 20;
+				tip.innerHTML = teamname;
+				tip.style.display = 'block';
+			};
+			
+			var clearTeamTooltip = function () {
+				var tip = document.getElementById('tool-tip');
+				tip.style.display = 'none';
+				tip.innerHTML = '';
+			};
+			
+			var colorOption = { team: 0, which: 0 };
+			var openColorDialog = function (team, which) {			
+				colorOption.team = team;
+				colorOption.which = which;
+				modal(true);
+				document.getElementById('color-picker').style.display = 'block';
+			};
+
+			var setColor = function setColor (c) {
+				document.getElementById('color-value').value = c;
+				document.getElementById('selected-color').style.backgroundColor = c;
+			};
+
+			var updateColor = function () {
+				document.getElementById('selected-color').style.backgroundColor = document.getElementById('color-value').value;
+			};
+			
+			var applyColor = function () {
+				teams[colorOption.team].colors[colorOption.which] = document.getElementById('color-value').value;
+				cancelColor();
+			};
+			
+			var cancelColor = function () {
+				colorOption = { team: 0, which: 0 };
+				modal(false);
+				document.getElementById('color-picker').style.display = 'none';
+			};
+			
+			var swapColors = function (side) {
+				var old = teams[side].colors;
+				teams[side].colors = { f: old.b, b: old.f };
+			};
+			
+			var setName = function (team) {
+				var value = window.prompt('name this team');
+				teams[team].n = value;
+			};
+			
+			var setTime = function () {
+				play = false;
+				var value = window.prompt('enter time [mm:ss.xxx]');
+				var timesplit = value.split(':');
+				if (timesplit.length == 2) {
+					var min = parseInt(timesplit[0]);
+					var sec = parseFloat(timesplit[1]);
+					time = Math.round((min * 60 + sec) * 1000);
+				}
+			};
+			
+			var setPeriodLength = function () {
+				play = false;
+				var value = window.prompt('enter time [mm:ss.xxx]');
+				var timesplit = value.split(':');
+				if (timesplit.length == 2) {
+					var min = parseInt(timesplit[0]);
+					var sec = parseFloat(timesplit[1]);
+					var swap = time == periodLength;
+					periodLength = Math.round((min * 60 + sec) * 1000);
+					if (swap) time = periodLength;
+				}
+			};
+			
+			var checkSubmit = function (event) {
+				var code = event.keyCode;
+				if (code == 13 || code == '13') {
+					submitGoalScorer();
+				}
+				event.chadmintonCancel = true;
+			};
+			
+			var refresh = function () {
+				clearLocalValue('cache');
+				setup();
+			};
+
+			var scrollInterval;
+			
+			var startScroll = function (id, dist, speed) {
+				scrollInterval = window.setInterval(function () {
+					scroll(id, dist);
+				}, speed);
+			};
+
+			var stopScroll = function () {
+				if (scrollInterval) {
+					window.clearInterval(scrollInterval);
+					scrollInterval = null;
+				}
+			};
+
+			var scroll = function (id, dist) {
+				var elem = document.getElementById(id);
+				var curr = elem.scrollLeft;
+				var max = elem.scrollWidth;
+				var set = Math.min(curr + dist, max);
+				elem.scrollLeft = set;
+			};
+			
+			var checkKey = function (event) {
+				if (!checkEvent(event) || isModal) return;
+				var handled = true;
+				switch (event.keyCode) {
+					case 32: // space
+						toggleClock();
+						break;
+					default: // in this case pass the event on
+						handled = false;
+						break;
+				}
+				if (handled) {
+					event.stopPropagation();
+					event.preventDefault();
+				}
+			};
+			
+			var checkEvent = function (event) {
+				return !event.chadmintonCancel;
+			};
+			
+			var showMatchupCard = function () {
+				modal(true);
+				var a = document.getElementById('matchup-away');
+				a.style.backgroundColor = teams[0].colors.b;
+				a.style.color = teams[0].colors.f;
+				a.style.backgroundImage = 'url(\'' + teams[0].img + '\')';
+				document.getElementById('matchup-away-city').innerHTML = teams[0].c;
+				document.getElementById('matchup-away-name').innerHTML = teams[0].n;
+				
+				var h = document.getElementById('matchup-home');
+				h.style.backgroundColor = teams[1].colors.b;
+				h.style.color = teams[1].colors.f;
+				h.style.backgroundImage = 'url(\'' + teams[1].img + '\')';
+				document.getElementById('matchup-home-city').innerHTML = teams[1].c;
+				document.getElementById('matchup-home-name').innerHTML = teams[1].n;
+				
+				document.getElementById('matchup-card').style.display = 'block';
+			};
+			
+			var hideMatchupCard = function () {
+				document.getElementById('matchup-away').style.backgroundImage = '';
+				document.getElementById('matchup-away-city').innerHTML = '';
+				document.getElementById('matchup-away-name').innerHTML = '';
+				
+				document.getElementById('matchup-home').style.backgroundImage = '';
+				document.getElementById('matchup-home-city').innerHTML = '';
+				document.getElementById('matchup-home-name').innerHTML = '';
+				
+				document.getElementById('matchup-card').style.display = 'none';
+				modal(false);
+			};
+		
+		</script>
+	</head>
+	<body onload="ready()" onkeydown="checkKey(event)">
+		<div id="shroud"></div>
+		<div class="top">
+			<div id="period" onclick="togglePeriod()">1</div>
+			<div id="clock" onclick="toggleClock()">20:00</div>
+			<div class="menu">
+				<div class="button" onclick="playAnthem('JElrnk3btxo')">US</div>
+				<div class="button" onclick="playAnthem('hr6kzHTPY1Y')">CA</div>
+				<div class="button" onclick="refresh()">&#10227;</div>
+				<div class="small button" onclick="setTime()">&bullet;</div>
+				<div class="small button" onclick="setPeriodLength()">P</div>
+			</div>
+			<div id="ad"></div>
+		</div>
+		<div class="bottom">
+			<div id="versus" class="button" onclick="showMatchupCard()">vs</div>
+			<div id="away" class="team">
+				<img id="away-logo" class="transparent-background" src="" />
+				<div id="away-name" class="name"></div>
+				<div class="goals" onclick="addGoal(0)" id="away-goals">0</div>
+				<div id="away-scores" class="scores"></div>
+				<div class="menu">
+					<div class="button" onclick="timeout(0)">TO</div>
+					<div class="button" onclick="addGoal(0)">+</div>
+					<div class="button" onclick="subtractGoal(0)">-</div>
+					<div class="small button" onclick="openTeamDialog(0)">?</div>
+					<div class="small button" onclick="setName(0)">N</div>
+					<div class="small button" onclick="openColorDialog(0, 'f')">fg</div>
+					<div class="small button" onclick="openColorDialog(0, 'b')">bg</div>
+					<div class="small button" onclick="swapColors(0)">sw</div>
+					<div class="small button" onclick="editGoal(0)">e</div>
+				</div>
+			</div>
+			<div id="home" class="team">
+				<img id="home-logo" class="transparent-background" src="" />
+				<div id="home-name" class="name"></div>
+				<div class="goals" onclick="addGoal(1)" id="home-goals">0</div>
+				<div id="home-scores" class="scores"></div>
+				<div class="menu">
+					<div class="button" onclick="timeout(1)">TO</div>
+					<div class="button" onclick="addGoal(1)">+</div>
+					<div class="button" onclick="subtractGoal(1)">-</div>
+					<div class="small button" onclick="openTeamDialog(1)">?</div>
+					<div class="small button" onclick="setName(1)">N</div>
+					<div class="small button" onclick="openColorDialog(1, 'f')">fg</div>
+					<div class="small button" onclick="openColorDialog(1, 'b')">bg</div>
+					<div class="small button" onclick="swapColors(1)">sw</div>
+					<div class="small button" onclick="editGoal(1)">e</div>
+				</div>
+			</div>
+		</div>
+		<div id="color-picker" class="picker" style="display: none;">
+			<div id="swatches"></div>
+			<div>
+				<input id="color-value" onchange="updateColor()"/>
+				<div class="swatch" id="selected-color"></div>
+				<div class="button" onclick="applyColor()">OK</div>
+				<div class="button" onclick="cancelColor()">CANCEL</div>
+			</div>
+		</div>
+		<div id="team-picker" class="picker" style="display: none;">
+			<div style="position: relative; height: 160px;">
+				<div class="scroller left" onmousedown="startScroll('teams', -20, 8)" onmouseup="stopScroll()" onmouseout="stopScroll()">&ltrif;</div>
+				<div id="teams" class="scroll-div"></div>
+				<div class="scroller right" onmousedown="startScroll('teams', 20, 8)" onmouseup="stopScroll()" onmouseout="stopScroll()">&rtrif;</div>
+			</div>
+			<div style="margin-left: 10%;">
+				<div class="team-select"><img id="selected-team" src=""/></div>
+				<span style="font-size: 32pt;" id="selected-team-name"></span>
+				<div style="float: right; margin-right: 10%; margin-top: 100px;">
+					<div class="button" onclick="applyTeam()">OK</div>
+					<div class="button" onclick="cancelTeam()">CANCEL</div>
+				</div>
+			</div>
+		</div>
+		<div id="goal-scored" class="info-popup" style="display: none;">
+			<div>GOAL</div>
+			<div>who scored? (e.g. "12 JOHN SMITH")</div>
+			<input onkeydown="checkSubmit(event)" id="who-scored"/>
+			<div class="button" onclick="submitGoalScorer()">OK</div>
+			<div class="button" onclick="subtractGoal(lastScore)">CANCEL</div>
+			<div class="shine"></div>
+		</div>
+		<div id="game-over" class="info-popup" onclick="closeInfo()" style="text-transform: uppercase; display: none;">
+			<div id="info"></div>
+			<div class="shine"></div>
+		</div>
+		<div id="matchup-card" onclick="hideMatchupCard()">
+			<div id="matchup-away">
+				<div id="matchup-away-city" class="matchup-city"></div>
+				<div id="matchup-away-name" class="matchup-name"></div>
+			</div>
+			<div id="matchup-home">
+				<div id="matchup-home-city" class="matchup-city"></div>
+				<div id="matchup-home-name" class="matchup-name"></div>
+			</div>
+		</div>
+		<div id="commercial">
+			<div id="commercial-inner"></div>
+		</div>
+		<audio id="beep-sound" preload="true">
+			<source src="sounds/beep.mp3" type="audio/mp3"/>
+		</audio>
+		<audio id="buzzer-sound" preload="true">
+			<source src="sounds/buzzer.mp3" type="audio/mp3"/>
+		</audio>
+		<div id="tool-tip"></div>
+	</body>
+</html>

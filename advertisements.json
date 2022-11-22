@@ -1,0 +1,33 @@
+[
+	{
+		"id": 1,
+		"name": "",
+		"font": "Arial",
+		"href": "",
+		"show": true,
+		"style": "height: 15vh",
+		"images": [
+			"https://images.contentstack.io/v3/assets/blt78ea74daeac0821b/bltad624471962ca6b9/60a6e47bb83e783ad9b37b8c/olive_icon_white.svg"
+		]
+	},
+	{
+		"id": 2,
+		"name": "",
+		"font": "Arial",
+		"href": "",
+		"show": true,
+		"images": [
+			"https://1000logos.net/wp-content/uploads/2020/07/Cigna-Logo-640x360.png"
+		]
+	},
+	{
+		"id": 3,
+		"name": "",
+		"font": "Arial",
+		"href": "",
+		"show": true,
+		"images": [
+			"https://columbuscommons.org/assets/img/content/logos/cc-logo-horiz-green-800.png"
+		]
+	}
+]

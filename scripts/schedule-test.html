@@ -1,0 +1,472 @@
+<html>
+    <head>
+        <script>
+        
+            var html = '<table><th><tr>'
+                     + '<td>TEAM</td>'
+                     + '<td>1</td>'
+                     + '<td>2</td>'
+                     + '<td>3</td>'
+                     + '<td>4</td>'
+                     + '<td>5</td>'
+                     + '<td>6</td>'
+                     + '<td>7</td>'
+                     + '</tr></th>';
+
+            var conferences = [
+                {
+                    name: 'B1G TEN',
+                    teams: ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kansas State', 'Maryland', 'Michigan', 'Michigan State', 'Minnesota', 'Nebraska', 'Northwestern', 'Ohio State', 'Penn State', 'Purdue', 'Rutgers', 'Wisconsin'],
+                    rivalries: [
+                    [],
+                    [
+                        ['Illinois', 'Purdue'],
+                        ['Kansas State', 'Iowa State'],
+                        ['Michigan State', 'Notre Dame'] 
+                    ],
+                    [],
+                    [
+                        ['Iowa', 'Minnesota'],
+                        ['Michigan', 'Michigan State'],
+                        ['Ohio State', 'Penn State']
+                    ],
+                    [
+                        ['Iowa', 'Iowa State'],
+                        ['Maryland', 'Virginia']
+                    ],
+                    [
+                        ['Iowa', 'Nebraska'],
+                        ['Kansas', 'Kansas State']
+                    ],
+                    [
+                        ['Illinois', 'Northwestern'],
+                        ['Indiana', 'Purdue'],
+                        ['Kansas', 'Missouri'],
+                        ['Maryland', 'Rutgers'],
+                        ['Michigan', 'Ohio State'],
+                        ['Michigan State', 'Penn State'],
+                        ['Minnesota', 'Wisconsin'],
+                        ['Nebraska', 'Oklahoma']
+                    ]
+                ],
+                weekOrder: [6, 3, 5, 4, 1, 2, 0],
+                schedule: []
+                },
+                {
+                    name: 'SEC',
+                    teams: ['Alabama', 'Arkansas', 'Auburn', 'Florida', 'Georgia', 'Kentucky', 'LSU', 'Mississippi State', 'Missouri', 'NC State', 'Ole Miss', 'South Carolina', 'Tennessee', 'Texas A&M', 'Vanderbilt', 'Virginia Tech'],
+                    rivalries: [
+                    [
+                        ['Texas A&M', 'Texas Tech'],
+                        ['Virginia Tech', 'East Carolina']
+                    ],
+                    [
+                        ['Arkansas', 'Texas'],
+                        ['Florida', 'Georgia'],
+                        ['LSU', 'Texas A&M'],
+                        ['NC State', 'Duke']
+                    ],
+                    [
+                        ['Florida', 'Tennessee']
+                    ],
+                    [],
+                    [
+                        ['Alabama', 'Tennessee'],
+                        ['Auburn', 'Georgia']
+                    ],
+                    [
+                        ['Arkansas', 'Texas A&M']
+                    ],
+                    [
+                        ['Alabama', 'Auburn'],
+                        ['Arkansas', 'LSU'],
+                        ['Florida', 'Florida State'],
+                        ['Georgia', 'Georgia Tech'],
+                        ['Kentucky', 'Louisville'],
+                        ['Mississippi State', 'Ole Miss'],
+                        ['Missouri', 'Kansas'],
+                        ['NC State', 'North Carolina'],
+                        ['South Carolina', 'Clemson'],
+                        ['Tennessee', 'Vanderbilt'],
+                        ['Texas A&M', 'Texas'],
+                        ['Virginia Tech', 'Virginia']
+                    ]
+                ],
+                weekOrder: [6, 1, 4, 0, 5, 2, 3],
+                schedule: []
+                },
+                {
+                    name: 'ACC',
+                    teams: ['Boston College', 'Cincinnati', 'Clemson', 'Duke', 'Florida State', 'Georgia Tech', 'Louisville', 'Miami', 'North Carolina', 'Pittsburgh', 'Syracuse', 'UConn', 'Virginia', 'Wake Forest', 'West Virginia', 'Notre Dame'],
+                    rivalries: [
+                    [
+                        ['Cincinnati', 'Miami OH'],
+                        ['UConn', 'UMass']
+                    ],
+                    [
+                        ['Cincinnati', 'Pittsburgh'],
+                        ['Notre Dame', 'Michigan State'],
+                        ['NC State', 'Duke']
+                    ],
+                    [],
+                    [],
+                    [
+                        ['Wake Forest', 'Duke'],
+                        ['Florida State', 'Miami'],
+                        ['Notre Dame', 'Stanford'],
+                        ['Virginia', 'Maryland']
+                    ],
+                    [
+                        ['Cincinnati', 'Louisville'],
+                        ['Duke', 'North Carolina']
+                    ],
+                    [
+                        ['Boston College', 'Syracuse'],
+                        ['Cincinnati', 'UConn'],
+                        ['South Carolina', 'Clemson'],
+                        ['Florida', 'Florida State'],
+                        ['Georgia', 'Georgia Tech'],
+                        ['Kentucky', 'Louisville'],
+                        ['Notre Dame', 'USC'],
+                        ['Duke', 'Miami'],
+                        ['Pittsburgh', 'West Virginia'],
+                        ['NC State', 'North Carolina'],
+                        ['Wake Forest', 'Appalachian State'],
+                        ['Virginia Tech', 'Virginia']
+                    ]
+                ],
+                weekOrder: [6, 4, 1, 5, 0, 2, 3],
+                schedule: []
+                },
+                {
+                    name: 'Pac-16',
+                    teams: ['Arizona', 'Arizona State', 'California', 'Colorado', 'Oklahoma', 'Oklahoma State', 'Oregon', 'Oregon State', 'Stanford', 'Texas', 'Texas Tech', 'UCLA', 'USC', 'Utah', 'Washington', 'Washington State'],
+                    rivalries: [
+                    [
+                        ['Colorado', 'Colorado State'],
+                        ['Texas Tech', 'Texas A&M']
+                    ],
+                    [
+                        ['Oklahoma State', 'Tulsa'],
+                        ['Texas', 'Arkansas']
+                    ],
+                    [
+                        ['Utah', 'Colorado']
+                    ],
+                    [
+                        ['Oklahoma', 'Texas'],
+                        ['Oregon', 'Washington']
+                    ],
+                    [
+                        ['Arizona', 'New Mexico'],
+                        ['Oklahoma State', 'Oklahoma'],
+                        ['Notre Dame', 'Stanford']
+                    ],
+                    [
+                        ['Texas', 'Texas Tech'],
+                        ['USC', 'UCLA']
+                    ],
+                    [
+                        ['Arizona', 'Arizona State'],
+                        ['California', 'Stanford'],
+                        ['Oklahoma', 'Nebraska'],
+                        ['Oregon', 'Oregon State'],
+                        ['Texas', 'Texas A&M'],
+                        ['Kentucky', 'Louisville'],
+                        ['Notre Dame', 'USC'],
+                        ['Utah', 'BYU'],
+                        ['Washington', 'Washington State']
+                    ]
+                ],
+                weekOrder: [6, 4, 5, 3, 0, 1, 2],
+                schedule: []
+                },
+                {
+                    name: 'MAC',
+                    teams: ['Akron', 'Ball State', 'Bowling Green', 'Buffalo', 'Central Michigan', 'Eastern Michigan', 'Iowa State', 'Kent State', 'Marshall', 'Miami OH', 'Northern Illinois', 'Ohio', 'Temple', 'Toledo', 'UMass', 'Western Michigan'],
+                    rivalries: [
+                    [
+                        ['Miami OH', 'Cincinnati'],
+                        ['UMass', 'UConn']
+                    ],
+                    [
+                        ['Ball State', 'Western KY'],
+                        ['Western Michigan', 'Central Michigan'],
+                        ['Iowa State', 'Kansas State'],
+                        ['Ohio', 'Marshall']
+                    ],
+                    [],
+                    [
+                        ['Eastern Michigan', 'Central Michigan']
+                    ],
+                    [
+                        ['Iowa State', 'Iowa'],
+                        ['Marshall', 'East Carolina']
+                    ],
+                    [],
+                    [
+                        ['Akron', 'Kent State'],
+                        ['Ball State', 'Northern Illinois'],
+                        ['Bowling Green', 'Toledo'],
+                        ['Buffalo', 'Temple'],
+                        ['Eastern Michigan', 'Western Michigan'],
+                        ['Miami OH', 'Ohio']
+                    ]
+                ],
+                weekOrder: [6, 1, 0, 4, 3, 5, 2],
+                schedule: []
+                },
+                {
+                    name: 'C-USA',
+                    teams: ['Charlotte', 'FAU', 'FIU', 'Georgia State', 'Louisiana Tech', 'Middle Tennessee', 'North Texas', 'Old Dominion', 'Rice', 'Southern Miss', 'UAB', 'UL Lafayette', 'UL Monroe', 'UTEP', 'UTSA', 'Western KY'],
+                    rivalries: [
+                    [],
+                    [
+                        ['Southern Miss', 'Memphis'],
+                        ['Western KY', 'Ball State']
+                    ],
+                    [
+                        ['Louisiana Tech', 'UL Monroe']
+                    ],
+                    [],
+                    [
+                        ['Rice', 'Baylor'],
+                        ['UAB', 'Memphis']
+                    ],
+                    [
+                        ['Louisiana Tech', 'Tulane'],
+                        ['Southern Miss', 'East Carolina']
+                    ],
+                    [
+                        ['Charlotte', 'Old Dominion'],
+                        ['FIU', 'FAU'],
+                        ['Georgia State', 'Georgia Southern'],
+                        ['Louisiana Tech', 'Southern Miss'],
+                        ['North Texas', 'SMU'],
+                        ['Rice', 'Houston'],
+                        ['Middle Tennessee', 'Western KY'],
+                        ['UAB', 'Troy'],
+                        ['UL Lafayette', 'UL Monroe'],
+                        ['UTEP', 'New Mexico State'],
+                        ['UTSA', 'Texas State']
+                    ]
+                ],
+                weekOrder: [6, 5, 1, 4, 2, 3, 0],
+                schedule: []
+                },
+                {
+                    name: 'American',
+                    teams: ['Appalachian State', 'Arkansas State', 'Army', 'East Carolina', 'Georgia Southern', 'Houston', 'Memphis', 'Navy', 'SMU', 'South Alabama', 'South Florida', 'Texas State', 'Troy', 'Tulane', 'Tulsa', 'UCF'],
+                    rivalries: [
+                    [
+                        ['East Carolina', 'Virginia Tech'],
+                        ['SMU', 'TCU']
+                    ],
+                    [
+                        ['Southern Miss', 'Memphis'],
+                        ['Tulsa', 'Oklahoma State']
+                    ],
+                    [
+                        ['South Alabama', 'Troy']
+                    ],
+                    [],
+                    [
+                        ['Appalachian State', 'Georgia Southern'],
+                        ['East Carolina', 'Marshall'],
+                        ['Memphis', 'UAB']
+                    ],
+                    [
+                        ['Louisiana Tech', 'Tulane'],
+                        ['Southern Miss', 'East Carolina']
+                    ],
+                    [
+                        ['Appalachian State', 'Wake Forest'],
+                        ['Arkansas State', 'Memphis'],
+                        ['Army', 'Navy'],
+                        ['Georgia Southern', 'Georgia State'],
+                        ['Houston', 'Rice'],
+                        ['North Texas', 'SMU'],
+                        ['South Florida', 'UCF'],
+                        ['Texas State', 'UTSA'],
+                        ['Troy', 'UAB'],
+                        ['Tulane', 'Tulsa']
+                    ]
+                ],
+                weekOrder: [6, 4, 5, 1, 0, 2, 3],
+                schedule: []
+                },
+                {
+                    name: 'Mountain West',
+                    teams: ['Air Force', 'Baylor', 'Boise State', 'BYU', 'Colorado State', 'Fresno State', 'Hawaii', 'Nevada', 'New Mexico', 'New Mexico State', 'San Diego State', 'San Jose State', 'TCU', 'UNLV', 'Utah State', 'Wyoming'],
+                    rivalries: [
+                    [
+                        ['Colorado', 'Colorado State'],
+                        ['SMU', 'TCU']
+                    ],
+                    [
+                        ['Air Force', 'Colorado State'],
+                        ['BYU', 'Utah State']
+                    ],
+                    [
+                        ['New Mexico', 'New Mexico State']
+                    ],
+                    [
+                        ['Boise State', 'Nevada'],
+                        ['BYU', 'Hawaii'],
+                        ['Fresno State', 'San Jose State']],
+                    [
+                        ['Wyoming', 'Hawaii'],
+                        ['Baylor', 'Rice'],
+                        ['New Mexico', 'Arizona']
+                    ],
+                    [
+                        ['Fresno State', 'Boise State']
+                    ],
+                    [
+                        ['Baylor', 'TCU'],
+                        ['BYU', 'Utah'],
+                        ['Colorado State', 'Wyoming'],
+                        ['Fresno State', 'San Diego State'],
+                        ['Nevada', 'UNLV'],
+                        ['New Mexico State', 'UTEP']
+                    ]
+                ],
+                weekOrder: [6, 4, 3, 1, 0, 2, 5],
+                schedule: []
+                }
+            ];
+
+            for (var c = 0; c < conferences.length; c++)
+            {
+                var set = conferences[c].teams.slice(0);
+                var n = set.length;
+                var p = n * (n-1) / 2;
+                var pairs = Array(p);
+                var i = 0;
+    
+                var numWeeks = n-1;
+                numWeeks = 7; // hard coded week value?
+    
+                var weeks = Array(numWeeks);
+    
+                while (set.length > 1) {
+                    var pivot = set.splice(0, 1)[0];
+                    for (var j = 0; j < set.length; j++) {
+                        pairs[i] = [pivot, set[j]];
+                        i++;
+                    }
+                }
+    
+                function exclude(games, game) {
+                    var i = games.indexOf(game);
+                    games.splice(i, 0);
+    
+                    var result = [];
+                    for (var x = 0; x < games.length; x++) {
+                        var match = game[0] == games[x][0]
+                                 || game[1] == games[x][0]
+                                 || game[0] == games[x][1]
+                                 || game[1] == games[x][1];
+                        if (!match) {
+                            result.push(games[x]);
+                        }
+                    }
+                    return result;
+                }
+                
+                function findMatch(games, team) {
+                    for (var x = 0; x < games.length; x++) {
+                        if(team == games[x][0]) return games[x][1];
+                        else if(team == games[x][1]) return games[x][0];
+                    }
+                    return '-BYE-';
+                }
+    
+                function remove (list, pair) {
+                    for(var x = 0; x < list.length; x++) {
+                        var match = (pair[0] == list[x][0] && pair[1] == list[x][1])
+                                 || (pair[0] == list[x][1] && pair[1] == list[x][0]);
+                        if (match) {
+                            list.splice(x, 1);
+                            break;
+                        }
+                    }
+                }
+    
+                for (var i = 0; i < numWeeks; i++) {
+                    var rivalryGames = conferences[c].rivalries[i];
+                    for(var j = 0; j < rivalryGames.length; j++) {
+                        remove(pairs, rivalryGames[j]);
+                    }
+                }
+    
+                for (var w = 0; w < numWeeks; w++) {
+                    var week = Array(n/2);
+                    function pickGame(games, wk) {
+                        if (games.length == 1) {
+                            week[wk] = games[0];
+                            return true;
+                        } else if (games.length > 0) {
+                            // pick a random pair
+                            var r = Math.floor(Math.random()*games.length);
+                            // pick the next pair
+                            //var r = 0;
+    
+                            var game = games[r];
+                            week[wk] = game;
+                            var options = exclude(games, game);
+                            return pickGame(options, wk+1);
+                        } else {
+                            //console.warn('Why do we have 0 games left??');
+                            return false;
+                        }
+                    }
+                    
+                    var rivalryGames = conferences[c].rivalries[conferences[c].weekOrder[w]];
+                    week = rivalryGames.slice(0);
+                    var otherGames = pairs;
+                    for (var x = 0; x < week.length; x++) {
+                        otherGames = exclude(otherGames, week[x]);
+                    }
+                    var ok = true;
+                    if (otherGames.length > 0) {
+                        ok = pickGame(otherGames, rivalryGames.length);
+                    }                    
+                    if (!ok) {
+                        console.log('This path resulted in a duplicate game...');
+                        w--;
+                    } else {
+                        weeks[conferences[c].weekOrder[w]] = week;
+                        for (var g = 0; g < n/2; g++) {
+                            var i = pairs.indexOf(week[g]);
+                            if (i > -1) pairs.splice(i, 1);
+                        }
+                    }
+                }
+
+                conferences[c].schedule = weeks;
+
+                for (var t = 0; t < conferences[c].teams.length; t++) {
+                    html += '<tr>';
+                    html += '<td>' + conferences[c].teams[t] + '</td>';
+
+                    for(var w = 0; w < weeks.length; w++) {
+                        html += '<td>' + findMatch(weeks[w], conferences[c].teams[t]) + '</td>';
+                     }
+
+                    html += '</tr>'
+                }
+            }
+
+            html += '</table>';
+
+            function onReady () {
+                document.body.innerHTML = html;
+            }
+
+        </script>
+    </head>
+    <body onload="onReady()">
+
+    </body>
+</html>

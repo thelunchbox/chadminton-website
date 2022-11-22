@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="scripts/query.js"></script>
+        <script src="https://unpkg.com/vue"></script>
+        <script>
+        
+            $(document).ready(function () {
+
+                var sqlVue = new Vue({
+                    el: '#sql',
+                    data: {
+                        id: 0,
+                        nickname: '',
+                        players: {}
+                    },
+                    methods: {
+                        test: function () {
+                            var q = new query();
+                            q.update('Players')
+                                .set({ nickname: this.nickname })
+                                .where({id: this.id})
+                                .execute(function () {
+                                    sqlVue.testget();
+                                });
+                        },
+                        testget: function () {                                               
+                            var q = new query();
+                            q.select(['*'])
+                                .from('Players')
+                                .orderBy({last: false})
+                                .execute(function (data) {
+                                    sqlVue.players = data;
+                                });
+                        },
+                        testdelete: function (id) {
+                            var q = new query();
+                            q.delete()
+                                .from('Players')
+                                .where({id: id})
+                                .execute(function () {
+                                    sqlVue.testget();
+                                });
+                        }
+                    }
+                });
+
+                sqlVue.testget();
+            });
+        
+        </script>
+    </head>
+    <body>
+        <div id='sql'>
+            id: <input v-model="id"/>
+            nickname: <input v-model="nickname"/>
+            <button v-on:click="test">update</button>
+            <div v-for="player in players" v-on:click="id = player.id; nickname = player.nickname;">
+                {{'[' + player.id + '] #' + player.number + ' ' + player.first + ' ' + player.nickname + ' ' + player.last}}
+                <button v-on:click="testdelete(player.id)">delete</button>
+            </div>
+        </div>
+    </body>
+</html>

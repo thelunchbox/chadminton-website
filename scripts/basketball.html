@@ -1,0 +1,274 @@
+<html>
+    <head>
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1" />
+        <title>CSS Pickup Queue</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <script src="https://unpkg.com/vue"></script>
+        <style>
+        
+            body {
+                font-family: 'Roboto', sans-serif;
+            }
+
+            div.selected {
+                background-color: #aaa;
+            }
+
+            button {
+                background-color: red;
+                border: none;
+                border-radius: 30px;
+                color: white;
+                font-weight: bold;
+                font-size: 14pt;
+                height: 30px;
+                min-width: 30px;
+                margin-left: 10px;
+            }
+
+            div.player {
+                padding: 5px 0px 0px 12px;
+                margin: 2px 0px 0px 0px;
+                border: solid thin #ccc;
+                height: 30px;
+                max-width: 400px;
+                font-size: 3vh;
+                position: relative;
+            }
+
+            div.player > button {
+                float: right;
+                clear: right;
+                margin: -2px 2px 0px 0px;
+            }
+
+            input[type=text] {
+                margin-top: 20px;
+                height: 40px;
+                width: 85%;
+                font-size: 3vh;
+                font-family: 'Roboto', sans-serif;
+            }
+
+            input[type=number] {
+                height: 40px;
+                width: 3vw;
+                font-size: 3vh;
+                font-family: 'Roboto', sans-serif;
+            }
+
+            div.player.first-on-team {
+                margin-top: 20px;
+            }
+
+            .first-on-team::before {
+                position: absolute;
+                content: '.';
+                color: transparent;
+                left: 0px;
+                width: 70vw;
+                height: 2px;
+                background-color: red;
+                top: -12px;
+            }
+
+            .first-on-team::after {
+                position: absolute;
+                content: attr(text);
+                color: red;
+                font-size: 14px;
+                left: 425px;
+                padding: 3px;
+                background-color: white;
+                top: -21px;
+                width: 55px;
+            }
+
+            .teams {
+                display: flex;
+            }
+
+            .teams > div {
+                width: 50vw;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="bball">
+            Team Size <input type="number" v-on:change="updateTeamSizes()" v-model="teamSize"/><button v-if="!firstGame" v-on:click="nextGame()">Next Game</button>
+            Total Games Played: {{totalGames}}
+            <div class="teams">                
+                <div>
+                    <h3>Team 1 <button v-if="firstGame && team[1].length == teamSize && team[2].length == teamSize" v-on:click="nextGame(1)">winner</button></h3>
+                    <div class="player"  v-for="p in team[1]" v-bind:class="{ 'selected' : p.selected }" v-on:click="select(p)">
+                        {{ p.name }} ({{p.games}} game{{p.games == 1 ? '' : 's'}}) <button v-on:click="removePlayerFromTeam(p, 1)">&times;</button>
+                    </div>
+                </div>
+                <div>
+                    <h3>Team 2 <button v-if="firstGame && team[1].length == teamSize && team[2].length == teamSize" v-on:click="nextGame(2)">winner</button></h3>
+                    <div class="player"  v-for="p in team[2]" v-bind:class="{ 'selected' : p.selected }" v-on:click="select(p)">
+                        {{ p.name }} ({{p.games}} game{{p.games == 1 ? '' : 's'}}) <button v-on:click="removePlayerFromTeam(p, 2)">&times;</button>
+                    </div>
+                </div>
+            </div>
+            
+            <input style="clear:both;" type="text" ref="name" v-model="newname" @keydown.enter="addPlayer()"/><button v-on:click="addPlayer()">+</button>
+            <div class="player" :text="teamTitle(i)" v-for="(p, i) in players" v-bind:class="{ 'selected': p.selected, 'first-on-team': i % teamSize == 0 }" v-on:click="select(p)">
+                {{p.name}} ({{p.games}} game{{p.games == 1 ? '' : 's'}}) <button v-on:click="removePlayer(p)">&times;</button>
+            </div>
+        </div>
+        <script>
+        
+            var bballVue = new Vue({
+                el: "#bball",
+                data: {
+                    totalGames: 0,
+                    selected: [],
+                    players: [],
+                    newname: '',
+                    firstGame: true,
+                    teamSize: 5,
+                    team: {
+                        1: [],
+                        2: []
+                    }
+                },
+                methods: {
+                    teamTitle: function (player) {
+                        var team = Math.floor(player/this.teamSize);
+                        if (team == 0) {
+                            return "Next On";
+                        } else {
+                            return (team + 1) + " games back";
+                        }
+                    },
+                    updateTeamSizes: function () {
+                        var allPlayers = this.team[1].concat(this.team[2]).concat(this.players);
+
+                        this.team[1] = [];
+                        this.team[2] = [];
+                        this.players = [];
+
+                        if (allPlayers.length >= this.teamSize) {
+                            this.team[1] = allPlayers.splice(0, this.teamSize);
+                            if (allPlayers.length >= this.teamSize) {
+                                this.team[2] = allPlayers.splice(0, this.teamSize);
+                                this.players = allPlayers;
+                            } else {
+                                this.team[2] = allPlayers;
+                            }
+                        } else {
+                            this.team[1] = allPlayers;
+                        }
+                    },
+                    addPlayer: function () {
+                        if (this.newname != null && this.newname.trim() != '') {
+                            var p = {
+                                name: this.newname,
+                                games: 0,
+                                selected: false
+                            };
+                            if (this.team[1].length < this.teamSize) {
+                                this.team[1].push(p);
+                            } else if (this.team[2].length < this.teamSize) {
+                                this.team[2].push(p);
+                            } else {
+                                var i = 0;
+                                while (i < this.players.length && this.players[i].games == 0) {
+                                    i++;
+                                }
+                                this.players.splice(i, 0, p);
+                            }
+                        }
+                        this.newname = '';
+                        this.$refs.name.focus();
+                    },
+                    removePlayer: function (p) {
+                        var index = this.players.indexOf(p);
+                        this.players.splice(index, 1);
+                        if (!p.selected) event.stopPropagation();
+                    },
+                    removePlayerFromTeam: function (p, t) {
+                        var index = this.team[t].indexOf(p);
+                        this.team[t].splice(index, 1);
+                        // take next player from wait list
+                        var next = this.players.splice(0,1)[0];
+                        this.team[t].push(next);
+                        if (!p.selected) event.stopPropagation();
+                    },
+                    nextGame: function (winner) {
+                        this.team[1].forEach(p => p.games++);
+                        this.team[2].forEach(p => p.games++);
+                        let teamToSwap = winner && winner == 1 ? 2 : 1;
+
+                        var t = this.team[teamToSwap].splice(0, this.teamSize);
+                        this.players = this.players.concat(t);
+                        if (teamToSwap == 1) {
+                            this.team[1] = this.team[2].slice();
+                        }
+                        this.team[2] = this.players.splice(0, this.teamSize);
+
+                        this.totalGames++;
+                        this.firstGame = false;
+                    },
+                    select: function (p) {
+                        if (!p.selected) {
+                            if (!this.selected[0]) {
+                                this.selected[0] = p;
+                            } else {
+                                if (this.selected[1]) this.selected[1].selected = false;
+                                this.selected[1] = p;
+                                window.setTimeout(() => {
+                                    this.swapPlayers();
+                                }, 150);
+                            }
+                        } else {
+                            if (this.selected[0] == p) {
+                                this.selected[0] = this.selected[1];
+                            }
+                            this.selected[1] = null;
+                        }
+                        p.selected = !p.selected;
+                    },
+                    swapPlayers: function () {
+                        var source0 = this.team[1];
+                        var index0 = source0.indexOf(this.selected[0]);
+                        if (index0 < 0) {
+                            source0 = this.team[2];
+                            index0 = source0.indexOf(this.selected[0])
+                            if (index0 < 0) {
+                                source0 = this.players;
+                                index0 = source0.indexOf(this.selected[0]);
+                            }
+                        }
+
+                        var source1 = this.team[1];
+                        var index1 = source1.indexOf(this.selected[1]);
+                        if (index1 < 0) {
+                            source1 = this.team[2];
+                            index1 = source1.indexOf(this.selected[1])
+                            if (index1 < 0) {
+                                source1 = this.players;
+                                index1 = source1.indexOf(this.selected[1]);
+                            }
+                        }
+
+                        var a = source0[index0];
+                        var b = source1[index1];
+                        source0[index0] = b;
+                        source1[index1] = a;
+                        a.selected = false;
+                        b.selected = false;
+                        this.selected[0] = null;
+                        this.selected[1] = null;
+
+                        // force vue to update
+						this.$forceUpdate();
+                    }
+                }
+            });
+        
+        </script>
+    </body>
+</html>

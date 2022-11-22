@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style id="gameArea">
+canvas {
+    background-color: #333333;
+    cursor: crosshair;
+}
+html, body {
+	padding: 0px;
+	margin: 0px;
+}
+</style>
+<img id="onePistol" src="./images/onePistol.png" style="display: none" />
+<img id="onePistolFire" src="./images/onePistolFire.png" style="display: none" />
+<img id="twoPistols" src="./images/twoPistols.png" style="display: none" />
+<img id="twoPistolsFireL" src="./images/twoPistolsFireL.png" style="display: none" />
+<img id="twoPistolsFireR" src="./images/twoPistolsFireR.png" style="display: none" />
+<img id="bat" src="./images/bat.png" style="display: none" />
+<img id="batSwing" src="./images/batSwing.png" style="display: none" />
+<img id="zomb" src="./images/zomb.png" style="display: none" />
+<img id="roughZomb" src="./images/roughZomb.png" style="display: none" />
+<img id="splat" src="./images/splat.png" style="display: none" />
+<img id="upgradeSign" src="./images/upgradeSign.png" style="display: none" />
+</head>
+<body onload="startGame()">
+<script>
+
+window.addEventListener('resize', function () {
+	myGame.canvas.width = window.innerWidth - 4;
+	myGame.canvas.height = window.innerHeight - 4;
+	canvasWidth = myGame.canvas.width;
+	canvasHeight = myGame.canvas.height;
+});
+
+//tons of vars for game specs
+var keyStrokes = [];
+var player1;
+var canvasWidth = window.innerWidth - 4;
+var canvasHeight = window.innerHeight - 4;
+var playerColor = "#ffffff";
+var playerOutlineColor = "#0000ff";
+var playerWidth = 100;
+var playerHeight = 125;
+var freeze = false;
+var displayControls = true;
+
+//input keycodes
+var KEY = {
+    BACKSPACE: 8,
+    TAB:       9,
+    RETURN:   13,
+    ESC:      27,
+    SPACE:    32,
+    PAGEUP:   33,
+    PAGEDOWN: 34,
+    END:      35,
+    HOME:     36,
+    LEFT:     37,
+    UP:       38,
+    RIGHT:    39,
+    DOWN:     40,
+    INSERT:   45,
+    DELETE:   46,
+    ZERO:     48, ONE: 49, TWO: 50, THREE: 51, FOUR: 52, FIVE: 53, SIX: 54, SEVEN: 55, EIGHT: 56, NINE: 57,
+    A:        65, B: 66, C: 67, D: 68, E: 69, F: 70, G: 71, H: 72, I: 73, J: 74, K: 75, L: 76, M: 77, N: 78, O: 79, P: 80, Q: 81, R: 82, S: 83, T: 84, U: 85, V: 86, W: 87, X: 88, Y: 89, Z: 90,
+    TILDA:    192
+};
+
+var GAME_STATES = {
+    START: 1,
+    IN_GAME: 2,
+    GAME_OVER: 3
+};
+
+var WEAPONS = {
+    BAT : {
+        id: 'bat',
+        ammoString: 'AMMO: N/A',
+        ammoCount: 999999,
+        standingSprite: document.getElementById('bat'),
+        swingingSprite: document.getElementById('batSwing'),
+    },
+    PISTOL : {
+        id: 'pistol',
+        ammoString: 'AMMO: | | | | | | ',
+        ammoCount: 6,
+        standingSprite: document.getElementById('onePistol'),
+        shootingSprite: document.getElementById('onePistolFire'),
+    },
+    TWOPISTOLS : {
+        id: 'twoPistols',
+        ammoString: 'AMMO: | | | | | | | | | | | | ',
+        ammoCount: 12,
+        standingSprite: document.getElementById('twoPistols'),
+        shootingSpriteL: document.getElementById('twoPistolsFireL'),
+        shootingSpriteR: document.getElementById('twoPistolsFireR'),
+    }
+    
+}
+
+var zombies = [];
+var first = true;
+function startGame() {
+	// var t = setInterval(function(){ countDown-- }, 1000);	
+	// setTimeout(function(){ freeze = false; countDown = 3; window.clearInterval(t);}, 10000);
+	player1 = new player(playerWidth, playerHeight, (canvasWidth/2)-playerWidth/2 - 35, (canvasHeight/2)-(playerHeight/2)+20);
+    zombies = [];
+    var pair = getRandomSpawnXY(playerWidth, playerHeight);
+    zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('roughZomb')));
+    pair = getRandomSpawnXY(playerWidth, playerHeight);
+    zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('zomb')));
+    pair = getRandomSpawnXY(playerWidth, playerHeight);
+    zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('roughZomb')));
+    HUD = new HUD1();
+
+	if(first){
+        myGame.start();
+        first = false;
+    }
+}
+
+document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
+document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
+
+function onkey(ev, key, pressed) {
+  switch(key) {
+    case KEY.W:  player1.input.up  = pressed; ev.preventDefault(); break;
+    case KEY.S: player1.input.down = pressed; ev.preventDefault(); break;
+    case KEY.A:  player1.input.left  = pressed; ev.preventDefault(); break;
+    case KEY.D: player1.input.right = pressed; ev.preventDefault(); break;
+    case KEY.SPACE: player1.input.space = pressed; ev.preventDefault(); break;
+  }
+}
+
+function determinePlayerRotation(ev){
+    var p1x = player1.x+(player1.width/2);
+    var p1y =  player1.y+(player1.height/2);
+    player1.degrees = Math.atan2(ev.pageX- p1x,- (ev.pageY- p1y) )*(180/Math.PI);
+}
+
+function determineSwingOffset () {
+    var d = player1.degrees;
+    if(d<0) d = 360 + d;
+    var pair = { x: 0, y: 0 };
+    if ((d >= 337.5 && d <= 360) || (d >= 0 && d <= 22.5)) {
+        pair.x = 57;
+        pair.y = -113;        
+    }else if (d >= 22.5 && d <= 67.5) {
+        pair.x = 88;
+        pair.y = -81;
+    }else if (d >= 67.5 && d <= 112.5) {
+        pair.x = 86;
+        pair.y = -28;
+    }else if (d >= 112.5 && d <= 157.5) {
+        pair.x = 50;
+        pair.y = 0;
+    }else if (d >= 157.5 && d <= 202.5) {
+        pair.x = 0;
+        pair.y = 0;
+    }else if (d >= 202.5 && d <= 247.5) {
+        pair.x = -30;
+        pair.y = -40;
+    }else if (d >= 247.5 && d <= 292.5) {
+        pair.x = -28;
+        pair.y = -86;
+    }else if (d >= 292.5 && d <= 337.5) {
+        pair.x = 0;
+        pair.y = -95;
+    }
+    return pair;
+}
+
+var L = true;
+var determineSprite = function (spriteType, offsetPair) {
+    player1.width = playerWidth;
+    player1.height = playerHeight;
+    var xOffset = offsetPair.x;
+    var yOffset = offsetPair.y;
+    if(player1.weapon.id == 'bat') {
+        if(spriteType == 'standing') {
+            if(player1.image==player1.weapon.swingingSprite){
+                player1.y -= yOffset;
+                player1.x -= xOffset;
+            }
+            player1.swinging = false;
+            player1.image = player1.weapon.standingSprite;
+            player1.width = 157;
+            player1.height = 92;
+        }else if(spriteType == 'shooting') {
+            player1.image = player1.weapon.swingingSprite;
+            player1.width = 100;
+            player1.height = 205;
+            player1.y += yOffset;
+            player1.x += xOffset;
+            player1.swinging = true;
+        }
+    }else if(player1.weapon.id == 'pistol') {
+        if(spriteType == 'standing') player1.image = player1.weapon.standingSprite;
+        else if(spriteType == 'shooting') player1.image = player1.weapon.shootingSprite;
+    } else if(player1.weapon.id == 'twoPistols') {
+        if(spriteType == 'standing') {
+            player1.image = player1.weapon.standingSprite;
+        } else if(spriteType == 'shooting') {
+            if(L) player1.image = player1.weapon.shootingSpriteL;
+            else player1.image = player1.weapon.shootingSpriteR;
+            L = !L;
+        }
+    }
+}
+
+var fireDelay = false;
+function shoot(ev, options){
+    ev.preventDefault();
+    if(ev.button==0&&options.down&&myGame.state==GAME_STATES.IN_GAME){
+        if(!fireDelay){
+            for(var i = 0; i < zombies.length; i++){
+                zombies[i].checkShot(ev.clientX, ev.clientY);
+            }
+            fireDelay = true;
+            var offsetPair = determineSwingOffset();
+            determineSprite('shooting', offsetPair);          
+            HUD.shotsFired();
+            var to = 100;
+            if(player1.weapon.id=='bat') to = 250;
+            setTimeout(function(){
+                determineSprite('standing', offsetPair);
+                if(HUD.ammoCount!=0) fireDelay = false;
+                for(var i = 0; i < zombies.length; i++){
+                    zombies[i].shot = false;
+                }
+            }, to);
+        }
+    }
+    else if(ev.button==2&&options.down&&myGame.state!=GAME_STATES.IN_GAME){
+
+    }
+}
+
+function determinePlayerMovement(){
+    var speed = 3;
+    if(player1.input.up&&player1.y > 0){
+        player1.y-=speed;
+    }
+    if(player1.input.down&&player1.y < canvasHeight-player1.height){
+        player1.y+=speed;
+    }
+    if(player1.input.left&&player1.x > 0){
+        player1.x-=speed;
+    }
+    if(player1.input.right&&player1.x < canvasWidth-player1.width){
+        player1.x+=speed;
+    }
+}
+
+function updateGame() {
+	myGame.clear();
+    
+    HUD.update();
+
+	if(myGame.state==GAME_STATES.IN_GAME){		
+        determinePlayerMovement();
+        player1.update();
+        for(var i = 0; i < zombies.length; i++){
+            zombies[i].update()
+            if(zombies[i].dead){
+                var zx = zombies[i].x;
+                var zy = zombies[i].y;
+                setTimeout(function(){resetZombie(zx,zy)}, 2000);
+            }
+        }
+	}
+}
+
+function resetZombie(zx, zy){
+    for(var i = 0; i < zombies.length; i++){
+        if(zombies[i].x==zx&&zombies[i].y==zy){
+            zombies[i].dead = false;
+            zombies[i].health = 3;
+        }
+    }
+}
+
+var myGame = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = canvasWidth;
+        this.canvas.height = canvasHeight;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGame, 10);
+        myGame.canvas.addEventListener('mousemove', function(ev) { determinePlayerRotation(ev); });
+        myGame.canvas.addEventListener('mousedown', function(ev) { shoot(ev, { down: true }); });
+        myGame.canvas.addEventListener('contextmenu', function(ev) { ev.preventDefault(); return false; });
+        myGame.canvas.addEventListener('onDrag', function(ev) { ev.preventDefault(); });
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    state: GAME_STATES.START
+}
+
+var firstTimer = true;
+document.addEventListener('keydown', function(ev) {
+    if(ev.keyCode==KEY.SPACE&&myGame.state!=GAME_STATES.IN_GAME) {
+        startGame();
+        if(!firstTimer) displayControls = false;
+        firstTimer = false;
+        myGame.state = GAME_STATES.IN_GAME;
+    }
+});
+
+function HUD1(){
+    this.upgrade = false;
+    this.signCounter = -200;
+    this.upgradeSign = -200;
+    this.ammoString = player1.weapon.ammoString;
+    this.ammoCount = player1.weapon.ammoCount;
+	this.update = function(){
+		context = myGame.context;
+		context.fillStyle = "white";
+		context.font = "40px Impact";
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+        if(myGame.state==GAME_STATES.START){
+            context.fillText('HIT SPACE TO DIE',canvasWidth / 2,(canvasHeight/2));
+            context.fillText('Zomboozled (c) Nate Pratt 2017',canvasWidth / 2,(canvasHeight - 100));
+        }
+        else if(myGame.state==GAME_STATES.IN_GAME){
+			context.textBaseline = "top";
+            context.fillText(this.ammoString,canvasWidth / 2, 5);
+            context.fillText('Kills: ' + player1.killCount,canvasWidth / 2, 50);
+            if(displayControls){
+                context.fillText('-USE WASD                  TO MOVE',canvasWidth / 2 - 20, (canvasHeight/2));
+                context.fillText('-USE THE MOUSE TO AIM',canvasWidth / 2, (canvasHeight/2)+55);
+                context.fillText('-CLICK TO ATTACK', canvasWidth / 2, (canvasHeight/2)+110);
+                context.fillText('-SURVIVE', canvasWidth / 2, (canvasHeight/2)+165);
+            }            
+        }
+        else if(myGame.state==GAME_STATES.GAME_OVER){
+            context.fillText("GAME OVER",canvasWidth / 2,(canvasHeight/2));
+            context.fillText('KILLS: ' + player1.killCount,canvasWidth / 2,(canvasHeight/2)+50);
+            context.fillText('HIT SPACE TO DIE AGAIN',canvasWidth / 2,(canvasHeight/2)+150);
+        }
+        if(this.upgrade){
+            this.signCounter += 10;
+            context.drawImage(document.getElementById('upgradeSign'), (canvasWidth / 2)-200, this.upgradeSignY, 400, 200);
+            if(this.signCounter <= 0){
+                this.upgradeSignY = this.signCounter;
+            } else if(this.signCounter > 1000){
+                this.upgradeSignY -= 10;
+            }
+            if(this.upgradeSignY == -200){
+                this.signCounter = -200;
+                this.upgrade = false;
+            }
+        }
+	}
+
+    this.shotsFired = function(){
+        if(!this.upgrade && this.ammoString!='AMMO: N/A'){
+            this.ammoString = this.ammoString.slice(0,this.ammoString.length-2);
+            this.ammoCount--;
+            if(this.ammoCount==0){
+                this.ammoString = 'AMMO: RELOADING';
+                fireDelay = true;
+                setTimeout(function(){ 
+                    HUD.ammoString = player1.weapon.ammoString;
+                    fireDelay = false;
+                    HUD.ammoCount = player1.weapon.ammoCount;
+                }, 1000);
+            }
+        }
+    }		
+}
+
+function player(width, height, x, y) {
+    this.weapon = WEAPONS.BAT;
+    this.swinging = false;
+    this.degrees = 0;
+	this.width = 157;
+	this.height = 92;
+	this.image = document.getElementById('bat');
+	this.x = x;
+	this.y = y;
+    this.killCount = 0;
+    this.dead = false;
+	this.input = { up: false, down: false, left: false, right: false}
+
+    this.checkForGunUpgrade = function () {
+        switch(this.killCount){
+            case 5:
+                this.weapon = WEAPONS.PISTOL;
+                HUD.ammoCount = this.weapon.ammoCount;
+                HUD.ammoString = this.weapon.ammoString;
+                HUD.upgrade = true;
+                break;                
+            case 15:
+                this.weapon = WEAPONS.TWOPISTOLS;
+                HUD.ammoCount = this.weapon.ammoCount;
+                HUD.ammoString = this.weapon.ammoString;
+                HUD.upgrade = true;
+                break;
+        }
+    }
+
+    this.update = function (){
+        context = myGame.context;
+
+        context.save(); 
+
+        context.translate(this.x, this.y); 
+        
+        context.translate(this.width/2, this.height/2); 
+        
+        context.rotate(this.degrees*Math.PI/180); 
+        
+        context.drawImage(this.image, -this.width/2, -this.height/2, this.width, this.height);
+        // context.strokeStyle = '#ff0000';
+        // context.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+        // context.strokeStyle = '#ff0000';
+        // context.strokeRect(-this.width/2, -this.height/2, 4, 4);
+
+        context.restore();
+    }
+}
+
+function getRandomSpawnXY(width, height){
+    var pair = { x: 0, y: 0 }
+    switch(Math.floor((Math.random() * 4) + 1)){
+        case 1: //left
+            pair.x = (-width)-10;
+            pair.y = Math.floor((Math.random() * canvasHeight) + 1);
+        break;
+        case 2: //top
+            pair.x = Math.floor((Math.random() * canvasWidth) + 1);
+            pair.y = (-height)-10;
+        break;
+        case 3: //right
+            pair.x = canvasWidth+10;
+            pair.y = Math.floor((Math.random() * canvasHeight) + 1);
+        break;
+        case 4: //bottom
+            pair.x = Math.floor((Math.random() * canvasWidth) + 1);
+            pair.y = canvasHeight+10;
+        break;
+    }
+    return pair;
+}
+
+function zombie(width, height, x, y, image) {
+    this.degrees = 0;
+	this.width = width;
+	this.height = height;
+	this.image = image;
+	this.x = x;
+	this.y = y;
+    this.health = 3;
+    this.shot = false;
+    this.cX;
+    this.cY;
+    this.dead = false;
+
+    this.findPlayer = function(){
+        if(player1.x < this.x) this.x-=0.5;
+        else if(player1.x > this.x) this.x+=0.5;
+        if(player1.y < this.y) this.y-=0.5;
+        else if(player1.y > this.y) this.y+=0.5;
+        var zx = this.x+(this.width/2);
+        var zy =  this.y+(this.height/2);
+        var pw = player1.width;
+        var ph = player1.height;
+        var px = player1.x+(player1.width/2);
+        var py = player1.y+(player1.height/2);
+        this.degrees = Math.atan2(px - zx,-(py - zy) )*(180/Math.PI);
+        var collision;
+        if (player1.swinging) collision = Math.abs(zx-px) < pw/8 && Math.abs(zy-py) < ph/8;
+        else collision = Math.abs(zx-px) < pw/2 && Math.abs(zy-py) < ph/2;
+        if(collision){
+            player1.dead = true;
+            myGame.state = GAME_STATES.GAME_OVER;
+        }
+    }
+    this.checkShot = function(clickX, clickY){
+        var midX = this.x+(this.width/2);
+        var midY = this.y+(this.height/2);
+        var shot = Math.abs(clickX-midX) < this.width/2 && Math.abs(clickY-midY) < this.height/2;
+        var tmp = Math.abs((player1.x+(player1.width/2)) - midX);
+        if(player1.weapon.id=='bat') shot = shot && tmp < 180;
+        if(shot){
+            this.health--;
+            this.cX = clickX;
+            this.cY = clickY;
+            this.shot = true;
+            if(this.health==0){
+                player1.killCount++;
+                player1.checkForGunUpgrade();
+                this.dead = true;
+                var pair = getRandomSpawnXY(playerWidth, playerHeight);
+                this.x = pair.x;
+                this.y = pair.y;
+                pair = getRandomSpawnXY(playerWidth, playerHeight);
+                var thisOrThat = Math.floor((Math.random()*6) + 1);
+                if(zombies.length < 1000 && thisOrThat==1) zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('roughZomb')));
+                else if(zombies.length < 1000 && thisOrThat==2) zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('zomb')));
+                else if(zombies.length < 1000 && thisOrThat==3) zombies.push(new zombie(playerWidth, playerHeight, pair.x, pair.y, document.getElementById('roughZomb')));
+            }
+            else{
+
+            }
+        }
+    }
+    this.update = function (){
+
+        if(!this.dead) this.findPlayer();
+        context = myGame.context;
+
+        context.save();
+
+        context.translate(this.x, this.y); 
+        
+        context.translate(this.width/2, this.height/2); 
+        
+        context.rotate(this.degrees*Math.PI/180); 
+        
+        context.drawImage(this.image, -this.width/2, -this.height/2, this.width, this.height); 
+        
+        context.restore();
+
+        if(this.shot) {
+            displayControls = false;
+            if(this.dead) context.drawImage(document.getElementById('splat'), this.cX-75, this.cY-75, 150, 150);
+            else context.drawImage(document.getElementById('splat'), this.cX-20, this.cY-20, 40, 40);            
+        }
+    }
+}
+</script>
+<br>
+</body>
+</html>

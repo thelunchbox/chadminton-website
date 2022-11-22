@@ -1,0 +1,118 @@
+<html>
+  <head>
+    <title>Scoop-a-loop</title>
+    <meta
+      name="viewport"
+      content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Exo|Russo+One"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript" src="scripts/auto-scroll.js"></script>
+    <script type="text/javascript">
+      var currentImage = 0;
+      let images;
+
+      (async () => {
+        console.log("fetching photos from /api/photos/scoops");
+        images = await fetch("/api/photos/scoops").then((r) => r.json());
+
+        try {
+          for (var i = 0; i < images.length; i++) {
+            $("#picture-album").append(
+              '<img onclick="enlarge(' + i + ')" src="' + images[i] + '"/>'
+            );
+          }
+        } catch (e) {
+          console.log("An error has occurred: " + e.message);
+        }
+      })();
+
+      var enlarge = function (index) {
+        currentImage = index;
+        $("#big-picture").show();
+        $("#big-picture > img")[0].src = images[index];
+        $("#shroud").show();
+      };
+
+      var imageClick = function (event) {
+        console.log(event);
+        if (event.layerX < 0) {
+          if (currentImage > 0) {
+            enlarge(currentImage - 1);
+          } else {
+            $("#shroud").hide();
+            $("#big-picture").hide();
+          }
+        } else {
+          if (currentImage < images.length - 1) {
+            enlarge(currentImage + 1);
+          } else {
+            $("#shroud").hide();
+            $("#big-picture").hide();
+          }
+        }
+      };
+    </script>
+  </head>
+
+  <body>
+    <div class="header">
+      <a class="title" href="index.html">
+        <img src="img/chad-logo-square-2.png" /> CHADMINTON
+      </a>
+      <div class="menu">
+        <a href="events.html">events</a>
+        <!-- <a href="people.html">people</a> -->
+        <!-- <a href="teams.html">teams</a> -->
+        <a href="rules.html">rules</a>
+        <a href="pictures.html">pictures</a>
+        <a href="about.html">about</a>
+      </div>
+      <div class="links">
+        <a
+          href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')"
+          ><img src="img/facebook.png"
+        /></a>
+        <a href="javascript:window.open('https://twitter.com/chadm1nton')"
+          ><img src="img/twitter.png"
+        /></a>
+      </div>
+    </div>
+    <div class="section">
+      <div class="title">
+        <span class="red-text">MEET THE SCOOPS</span>
+      </div>
+      <div class="content">
+        Chadminton is a wonderful sport, but it's not just about moving a ball
+        around on a patch of grass. Many accomplished chadminton players are
+        also dedicated artists who spend hours crafting beautiful designs on a
+        canvas of scoops in the medium of duct-tape.
+        <!-- Check out some of their work below. -->
+      </div>
+    </div>
+    <div class="section">
+      <div id="picture-album" class="content"></div>
+    </div>
+    <div class="footer">
+      <a class="title" href="index.html">
+        <img src="img/chad-logo-square-2.png" /> CHADMINTON&trade; 2004-2020
+      </a>
+      <div>
+        Check out our sponsor,
+        <a href="http://buttonpunchgames.com/">Button Punch Games</a>
+      </div>
+    </div>
+    <div id="shroud" onclick="$(this).hide(); $('#big-picture').hide();"></div>
+    <div id="big-picture" onclick="imageClick(event)">
+      <img />
+    </div>
+  </body>
+</html>

@@ -1,1 +1,114 @@
-Chadminton website coming soon
+<html>
+
+<head>
+  <title>Chadminton</title>
+  <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1" />
+  <link href="https://fonts.googleapis.com/css?family=Exo|Russo+One" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="" crossorigin="anonymous"></script>
+  <script>
+    (function(i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r;
+      i[r] = i[r] || function() {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+      a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-102839774-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <script type="text/javascript">
+    var getRandomHeaderImage = function() {
+      var index = Math.floor(Math.random() * 3);
+      $('#header-background')[0].src = 'img/header-' + index.toString() + '.jpg';
+    };
+
+    var showPic = function(img) {
+      $('#big-picture').show();
+      $('#big-picture > img')[0].src = img;
+      $('#shroud').show();
+    };
+
+    var imageClick = function(event) {
+      $('#shroud').hide();
+      $('#big-picture').hide();
+    };
+  </script>
+</head>
+
+<body>
+  <div class="header">
+    <img id="header-background" />
+    <a class="title" href="index.html">
+      <img src="./img/chad-logo-square-2.png" /> CHADMINTON
+    </a>
+    <div class="menu">
+      <a href="events.html">events</a>
+      <!-- <a href="people.html">people</a> -->
+      <!-- <a href="teams.html">teams</a> -->
+      <a href="rules.html">rules</a>
+      <a href="pictures.html">pictures</a>
+      <a href="about.html">about</a>
+    </div>
+    <div class="links">
+      <a href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')"><img src="./img/facebook.png" /></a>
+      <a href="javascript:window.open('https://twitter.com/chadm1nton')"><img src="./img/twitter.png" /></a>
+    </div>
+  </div>
+  <div class="paralax position1" style="background-image:url('img/photos/2017/IMG_5638.jpg');"></div>
+  <div class="section">
+    <div class="title">
+      <span class="red-text">LACROSSE</span>
+      <span class="blue-text">+</span>
+      <span class="red-text">HOCKEY</span>
+      <span class="blue-text">+</span>
+      <span class="red-text">PILLOW FIGHTS</span>
+    </div>
+    <div class="content">
+      Chadminton takes all the best parts of games you've never played and mixes them into the sport of your dreams. Players on each team are equipped with scoops that are elaborately decorated with duct tape by Chadminton players past and present. The crazy
+      part? Each team also has a player called the <span style="font-weight: bold;">chad</span>, who wields a pillow as a weapon of chaos and destruction. At each end of a field is a goal, and the objective of the game is to score more points than
+      the other team by throwing or hitting the ball into the goal.
+      <div class="return"><a href="about.html">History of Chadminton&rtrif;</a><a href="scoops.html">Check out our scoops&rtrif;</a></div>
+    </div>
+  </div>
+  <div class="paralax position2" style="background-image:url('img/photos/2017/IMG_5835.jpg');"></div>
+  <div class="section">
+    <div class="title">
+      <span class="red-text">NO EXPERIENCE NECESSARY</span>
+    </div>
+    <div class="content">
+      <a href="javascript:showPic('img/photos/2012/morgan.JPG')">Anyone</a> can play Chadminton (and everyone should). Be the envy of all your friends! Chadminton is free*, co-ed, safe (as safe as any other sport) and fun, as well as an excellent way
+      to get some exercise if you want it. It's also a great way to meet new people! Whether you are an experienced athlete or a couch potato, Chadminton is fun for all skill levels.
+      <div class="return"><a href="pictures.html">See Chadminton in action&rtrif;</a><a href="rules.html">Learn the rules of the game&rtrif;</a></div>
+      <div class="footnote">Ok, sometimes we play at indoor facilities that charge each person a $10 membership fee</div>
+    </div>
+  </div>
+  <div class="paralax position3" style="background-image:url('img/photos/2017/IMG_20171121_194727.jpg');"></div>
+  <div class="section">
+    <div class="title">
+      <span class="red-text">QUESTIONS?</span>
+    </div>
+    <div class="content">
+      If you'd like to learn more about Chadminton, contact us!
+      <div class="line"> email: <a href="mailto:chadminton.17@gmail.com">chadminton.17@gmail.com</a> </div>
+      <div class="line"> facebook: <a href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')">chadmintonOhio</a> </div>
+      <div class="line"> twitter: <a href="javascript:window.open('https://www.twitter.com/chadm1nton/')">@chadm1nton</a> </div>
+    </div>
+  </div>
+  <div class="footer">
+    <a class="title" href="index.html">
+      <img src="http://chadminton.net/img/chad-logo-square-2.png" /> CHADMINTON&trade; 2004-2020
+    </a>
+    <div>Check out our sponsor, <a href="http://buttonpunchgames.com/">Button Punch Games</a></div>
+  </div>
+  <div id="shroud" onclick="$(this).hide(); $('#big-picture').hide();"></div>
+  <div id="big-picture" onclick="imageClick(event)">
+    <img/>
+  </div>
+</body>
+
+</html>
