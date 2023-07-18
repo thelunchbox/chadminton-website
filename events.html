@@ -1,51 +1,70 @@
 <html>
+  <head>
+    <title>Upcoming Events</title>
+    <meta
+      name="viewport"
+      content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Exo|Russo+One"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .chad-event {
+        margin-top: 15px;
+      }
 
-<head>
-  <title>Upcoming Events</title>
-  <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, user-scalable=no, maximum-scale=1, minimum-scale=1" />
-  <link href="https://fonts.googleapis.com/css?family=Exo|Russo+One" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .chad-event {
-      margin-top: 15px;
-    }
-    
-    .chad-event>.title {
-      font-size: 20pt;
-    }
-  </style>
-</head>
+      .chad-event > .title {
+        font-size: 20pt;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="header">
-    <a class="title" href="index.html">
-      <img src="img/chad-logo-square-2.png" /> CHADMINTON
-    </a>
-    <div class="menu">
-      <a href="events.html">events</a>
-      <!-- <a href="people.html">people</a> -->
-      <!-- <a href="teams.html">teams</a> -->
-      <a href="rules.html">rules</a>
-      <a href="pictures.html">pictures</a>
-      <a href="about.html">about</a>
-    </div>
-    <div class="links">
-      <a href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')"><img src="img/facebook.png" /></a>
-      <a href="javascript:window.open('https://twitter.com/chadm1nton')"><img src="img/twitter.png" /></a>
-    </div>
-  </div>
-  <div class="paralax" style="background-image:url('img/photos/2017/IMG_6030.jpg'); background-position-y: -150px;"></div>
-  <div class="section">
-    <div class="title">
-      <span class="red-text">UPCOMING CHADMINTON EVENTS</span>
-    </div>
-    <div class="content" id="events">
-      <div class="chad-event">
-        <div class="title red-text">Wed August 31, 2022 6:00 pm</div>
-        <a target="_blank" href="https://columbuscommons.org/">Pickup Games at Columbus Commons</a> (No cleats allowed)
+  <body>
+    <div class="header">
+      <a class="title" href="index.html">
+        <img src="img/chad-logo-square-2.png" /> CHADMINTON
+      </a>
+      <div class="menu">
+        <a href="events.html">events</a>
+        <!-- <a href="people.html">people</a> -->
+        <!-- <a href="teams.html">teams</a> -->
+        <a href="rules.html">rules</a>
+        <a href="pictures.html">pictures</a>
+        <a href="about.html">about</a>
+        <a
+          href="https://www.bonfire.com/store/chadminton/"
+          target="_blank"
+          noopener
+          noreferrer
+          >store</a
+        >
+      </div>
+      <div class="links">
+        <a
+          href="javascript:window.open('https://www.facebook.com/chadmintonOhio/')"
+          ><img src="img/facebook.png"
+        /></a>
+        <a href="javascript:window.open('https://twitter.com/chadm1nton')"
+          ><img src="img/twitter.png"
+        /></a>
       </div>
     </div>
-  </div>
-</body>
-
+    <div
+      class="paralax"
+      style="
+        background-image: url('img/photos/2017/IMG_6030.jpg');
+        background-position-y: -150px;
+      "
+    ></div>
+    <div class="section">
+      <div class="title">
+        <span class="red-text">UPCOMING CHADMINTON EVENTS</span>
+      </div>
+      <div class="content" id="events">
+        <!-- make this dynamically load from a google calendar? -->
+      </div>
+    </div>
+  </body>
 </html>
