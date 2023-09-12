@@ -60,9 +60,12 @@
       </div>
     </div>
     <script>
-      const converter = new showdown.Converter();
-      const rulesMarkdown = await fetch('./rules.md').then(x => x.text());
-      document.querySelector('#rules').innerHTML = converter.makeHtml(rulesMarkdown);
+      async function loadRules() {
+        const converter = new showdown.Converter();
+        const rulesMarkdown = await fetch('./rules.md').then(x => x.text());
+        document.querySelector('#rules').innerHTML = converter.makeHtml(rulesMarkdown);
+      }
+      loadRules();
     </script>
   </body>
 </html>
