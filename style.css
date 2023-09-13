@@ -64,7 +64,7 @@ a {
   color: #0071bc;
 }
 
-.red-text {
+.red-text, h2 {
   color: #cc0000;
 }
 
@@ -217,7 +217,7 @@ a {
   margin-top: 80px;
 }
 
-.title {
+.title, h2 {
   font-family: 'Russo One', sans-serif;
   font-size: 36px;
   letter-spacing: 3px;
