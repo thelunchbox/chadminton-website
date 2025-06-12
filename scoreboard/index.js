@@ -166,7 +166,7 @@ function setup() {
 
   window.addEventListener('message', (event) => {
     // event.origin
-    if (origin !== 'https://chadminton.net') return;
+    if (origin !== 'https://www.chadminton.net') return;
     // event.data
     const { method, params } = event.data;
     switch (method) {
@@ -261,7 +261,7 @@ function displayTime() {
     mirror.postMessage({
       method: 'setClockDisplay',
       params: [display]
-    }, 'https://chadminton.net');
+    }, 'https://www.chadminton.net');
   }
 
   window.requestAnimationFrame(displayTime);
@@ -358,7 +358,7 @@ function setPeriodMessage(message = null) {
     mirror.postMessage({
       method: 'setPeriodMessage',
       params: [periodMessage]
-    }, 'https://chadminton.net');
+    }, 'https://www.chadminton.net');
   }
 };
 
@@ -500,11 +500,11 @@ function updateScoreboard() {
     mirror.postMessage({
       method: 'setTeams',
       params: [teams]
-    }, 'https://chadminton.net');
+    }, 'https://www.chadminton.net');
     mirror.postMessage({
       method: 'updateScoreboard',
       params: []
-    }, 'https://chadminton.net');
+    }, 'https://www.chadminton.net');
   }
 }
 
