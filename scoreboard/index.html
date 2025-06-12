@@ -1,0 +1,141 @@
+<html>
+
+<head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+	<title>Chadminton Scoreboard</title>
+	<link rel="stylesheet" href="./style.css" />
+	<script src="https://www.youtube.com/player_api"></script>
+	<script type="text/javascript" src="./index.js"></script>
+</head>
+
+<body onload="ready()" onkeydown="checkKey(event)">
+	<div id="settings" onclick="showSettings()">
+		⚙️
+	</div>
+	<div id="controls" onclick="showControls()">
+		⌨️
+	</div>
+	<div id="top-ad">
+		Chadminton
+	</div>
+	<div id="content">
+		<div id="left">
+			<div class="name">
+				Team A
+			</div>
+			<div class="score" onclick="addGoal('left')">
+				0
+			</div>
+			<div class="timeouts">
+				. .
+			</div>
+		</div>
+		<div id="middle">
+			<div class="clock">
+				<div class="high">20</div>
+				<div class="separator">:</div>
+				<div class="low">00</div>
+			</div>
+			<div class="period">
+				Period <span id="period">1</span>
+			</div>
+		</div>
+		<div id="right">
+			<div class="name">
+				Team B
+			</div>
+			<div class="score" onclick="addGoal('right')">
+				0
+			</div>
+			<div class="timeouts">
+				. .
+			</div>
+		</div>
+	</div>
+	<div id="bottom-ad">
+		Chadminton
+	</div>
+	<div class="settings-form">
+		<div>
+			<div>Period Length</div>
+			<input id="period-length" />
+		</div>
+		<div>
+			<div>Intermission Length</div>
+			<input id="intermission-length" />
+		</div>
+		<div>
+			<div>Number of Periods</div>
+			<input id="total-periods" />
+		</div>
+		<div>
+			<div>Left Team Name</div>
+			<input id="left-team-name" />
+		</div>
+		<div>
+			<div>Left Team Color</div>
+			<input id="left-team-color" />
+		</div>
+		<div>
+			<div>Left Team Text</div>
+			<input id="left-team-text" />
+		</div>
+		<div>
+			<div>Right Team Name</div>
+			<input id="right-team-name" />
+		</div>
+		<div>
+			<div>Right Team Color</div>
+			<input id="right-team-color" />
+		</div>
+		<div>
+			<div>Right Team Text</div>
+			<input id="right-team-text" />
+		</div>
+		<button onclick="closeSettings()">OK</button>
+	</div>
+	<div class="controls-form">
+		<div>
+			<div>
+				<div>Left Score</div>
+				<input id="left-score" onblur="edit(event, 'left.score')" />
+			</div>
+			<div>
+				<div>Left Timeouts</div>
+				<input id="left-timeouts" onblur="edit(event, 'left.timeouts')" />
+			</div>
+		</div>
+		<div>
+			<div>
+				<div>clock</div>
+				<input id="clock-edit" onblur="edit(event, 'time')" />
+			</div>
+			<div>
+				<div>period</div>
+				<input id="period-edit" onblur="edit(event, 'period')" />
+			</div>
+			<div>
+				<button onclick="toggleClock(true)">START</button>
+				<button onclick="toggleClock(false)">STOP</button>
+			</div>
+			<div>
+				<button onclick="openMirror(true)">OPEN MIRROR</button>
+			</div>
+		</div>
+		<div>
+			<div>
+				<div>Right Score</div>
+				<input id="right-score" onblur="edit(event, 'right.score')" />
+			</div>
+			<div>
+				<div>Right Timeouts</div>
+				<input id="right-timeouts" onblur="edit(event, 'right.timeouts')" />
+			</div>
+		</div>
+		<button onclick="hideControls()" class="close">X</button>
+	</div>
+</body>
+
+</html>
